@@ -62,9 +62,7 @@
                         <th>Дата создания заказа</th>
                         <th>ФИО гостя</th>
                         <th>Общая сумма</th>
-                        <th>Статус заказа</th>
-                        <th>Забронированные столы</th>
-                        <th>Время</th>                        
+                        <th>Статус заказа</th>           
                         <th>Email</th>
                         <th>Номер телефона</th>
                     </tr>
@@ -78,38 +76,7 @@
                             <td>@order.CreatedDate</td>
                             <td>@order.User</td>
                             <td>@order.TotalSum</td>
-                            <td>@order.OrderStatus.Name</td>
-                            <td>
-                                @{
-                                    string reservedTables;
-                                    int countTables = 1;
-
-                                    foreach (var item in order.TableOrders)
-                                    {
-                                        reservedTables = $"{countTables}. {item.Table.TableNum}";
-                                        countTables++;
-                                        @reservedTables
-                                        <br />
-                                    }
-
-                                }
-
-                            </td>
-                            <td>
-                                @{
-                                    string reservedTime;
-                                    int countTime = 1;
-
-                                    foreach (var item in order.TableOrders)
-                                    {
-                                        reservedTime = $"{countTime}. {item.ReservedDate.ToShortDateString()}:{item.OrderPeriod.FromTo}";
-                                        countTime++;
-                                        @reservedTime
-                                        <br />
-                                    }
-                                }
-
-                            </td>                            
+                            <td>@order.OrderStatus.Name</td>                                                      
                             <td>@order.User.Email</td>
                             <td>@order.User.Phone</td>
                             @if (userRole == "Admin")

@@ -3,6 +3,7 @@
 @inject NavigationManager _navManager
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize(Roles = "Manager,Admin")]
+@inject ViewNavbarService ViewNavBar
 
 <PageTitle>Редактирование @orderId</PageTitle>
 
@@ -30,7 +31,7 @@
         </div>        
         <div class="form-group">
             <button type="submit" class="btn btn-custom">Save</button>
-            <button class="btn custom-btn-google" @onclick="ReturnToManagement">Cancel</button>
+            <button class="btn-google custom-btn-google" @onclick="ReturnToManagement">Назад</button>
         </div>
     </EditForm>
 
@@ -44,6 +45,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        ViewNavBar.Hide();
         await GetOrderStatusesList();
         if (orderId != 0)
         {

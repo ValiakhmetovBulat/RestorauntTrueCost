@@ -3,17 +3,94 @@
 @attribute [Authorize(Roles = "Manager,Admin")]
 @using RestorauntTrueCost.Shared.Entities
 @inject IOrderManagementViewModel _orderManagment
+@inject NavigationManager _navManager
 @inject HttpClient Http
 @inject ViewNavbarService ViewNavBar
 
-<PageTitle>Детали заказа @orderId</PageTitle>
-
 <div class="management-container">
-    <h3>Детали заказа @orderId</h3>
+    @if (order == null)
+    {
+        <PageTitle>Заказ @orderId не найден</PageTitle>
+        <h1>Заказ @orderId не найден</h1>
+    }
+    else
+    {
+        <PageTitle>Детали заказа @orderId</PageTitle>
+        <h1 style="font-weight:bold">Детали заказа @orderId</h1>
+        <br />
 
+        <h2>Заказанные столы</h2>
+        <table class="table table-striped align-middle table-bordered">
+            <thead class="table-success">
+                <tr>
+                    <th>ID</th>
+                    <th>Дата бронирования</th>
+                    <th>Время бронирования</th>
+                    <th>Номер стола</th>
+                    <th>Количество гостей</th>
+                    <th>Стоимость бронирования</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tableOrder in order.TableOrders)
+                {
+
+                    <tr>
+                        <td>@tableOrder.Id</td>
+                        <td>@tableOrder.ReservedDate</td>                        
+                        <td>@tableOrder.OrderPeriod.FromTo</td>
+                        <td>@tableOrder.Table.TableNum</td>
+                        <td>@tableOrder.Table.GuestNum</td>
+                        <td>@tableOrder.Table.ReserveCost</td>                        
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        <h2>Состав заказа</h2>
+        <table class="table table-striped align-middle table-bordered">
+            <thead class="table-success">
+                <tr>
+                    <th>ID</th>
+                    <th>Наименование</th>
+                    <th>Стоимость за 1 ед.</th>
+                    <th>Общая стоимость</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var orderToPosition in order.OrderToPositions)
+                {
+
+                    <tr>
+                        <td>@orderToPosition.Id</td>
+                        <td>@orderToPosition.MenuPosition.Name</td>
+                        <td>@orderToPosition.MenuPosition.Price</td>
+                        <td>@(orderToPosition.MenuPosition.Price * orderToPosition.Count)</td>
+                        <td>@orderToPosition.Count</td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    }   
+    <button class="btn-google custom-btn-google" @onclick="ReturnToManagement">Назад</button>
 </div>
 
 @code {
     [Parameter]
     public int orderId { get; set; }
+
+    private Order? order { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewNavBar.Hide();
+        order = await Http.GetFromJsonAsync<Order>("api/order/" + orderId);
+    }
+
+    protected void ReturnToManagement()
+    {
+        _navManager.NavigateTo("/ordermanagement/incoming");
+    }
 }
