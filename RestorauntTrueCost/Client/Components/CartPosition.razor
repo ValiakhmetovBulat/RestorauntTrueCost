@@ -1,0 +1,47 @@
+﻿@inject IMenuViewModel MenuViewModel
+
+@foreach (var position in MenuViewModel.Cart)
+{
+    <div class="cart-position-container">
+        <img src="/images/positions/@position.MenuPosition.Photo" alt="@position.MenuPosition.Name" class="cart-position-image">
+        <div class="cart-position-info">
+            <div class="cart-position-col">
+                <h1 class="cart-position-name">@position.MenuPosition.Name</h1>
+                <span class="cart-position-description">@position.MenuPosition.Decription</span>
+            </div>
+            <div class="cart-position-col-price">
+                <span class="cart-position-price">@CalculateTotalSum(position) руб.</span>
+            </div>
+            <div class="cart-position-col-price">
+                <button class="btn-add-position" @onclick="() => MenuViewModel.AddToCart(position.MenuPositionId)">
+                    <span class="oi oi-arrow-top"></span>
+                </button>
+
+                <span class="cart-position-count">@position.Count</span>
+
+                <button class="btn-add-position" @onclick="() => MenuViewModel.RemoveFromCart(position.MenuPositionId)">
+                    <span class="oi oi-arrow-bottom"></span>
+                </button>
+
+            </div>
+            <div class="cart-position-col-price">
+                <button class="btn-add-position" @onclick="() => MenuViewModel.RemoveAllPositionFromCart(position.MenuPositionId)">
+                    <span class="oi oi-trash"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        MenuViewModel.Cart = await MenuViewModel.GetCart();
+    }
+
+    private int CalculateTotalSum(CartToPosition position)
+    {
+        return position.Count * position.MenuPosition.Price;
+    }    
+
+}

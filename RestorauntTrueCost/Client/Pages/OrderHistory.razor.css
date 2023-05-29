@@ -1,0 +1,29 @@
+﻿.order-history-header {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.order-history-section {
+    font-size: 22px;
+    text-align: center;
+}
+
+.order-history-table {
+    background-color: #1F1F1F;
+    color: #ffffff;
+    width: 20%;
+    margin: 10px;
+}
+
+td {
+    padding: 10px;   
+}
+
+.order-history-container {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+

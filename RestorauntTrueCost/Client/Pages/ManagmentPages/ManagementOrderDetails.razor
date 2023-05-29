@@ -1,0 +1,19 @@
+﻿@page "/ordermanagement/details/{orderId:int}"
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "Manager,Admin")]
+@using RestorauntTrueCost.Shared.Entities
+@inject IOrderManagementViewModel _orderManagment
+@inject HttpClient Http
+@inject ViewNavbarService ViewNavBar
+
+<PageTitle>Детали заказа @orderId</PageTitle>
+
+<div class="management-container">
+    <h3>Детали заказа @orderId</h3>
+
+</div>
+
+@code {
+    [Parameter]
+    public int orderId { get; set; }
+}

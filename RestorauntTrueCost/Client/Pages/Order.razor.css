@@ -1,0 +1,25 @@
+﻿.map {
+    display: flex;
+    flex-direction: column;
+    border: solid #573825;
+    background-color: #E7D8D1;
+}
+
+.map-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.entry {
+    background-color: #573825;
+    height: 25px;
+    width: 60px;
+    text-align: center;
+    color: aliceblue;
+}
+
+.entry-container {
+    vertical-align: top;
+    padding-top: 0;
+}

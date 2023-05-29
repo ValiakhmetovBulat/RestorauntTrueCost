@@ -1,0 +1,79 @@
+﻿@page "/ordermanagement/edit/{orderId:int}"
+@inject HttpClient _httpClient
+@inject NavigationManager _navManager
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "Manager,Admin")]
+
+<PageTitle>Редактирование @orderId</PageTitle>
+
+<EditForm Model="@order" OnValidSubmit="() => SaveOrder()" class="management-container">
+    @if (orderId != 0)
+    {
+        <h3>Редактирование @orderId</h3>
+        <PageTitle>Редактирование @orderId</PageTitle>
+    }
+    else
+    {
+        <h3>Добавление пользователя</h3>
+        <PageTitle>Добавление заказа</PageTitle>
+    }
+    <div class="form-group row">
+            <label for="orderStatus" class="col-sm-2 col-form-label">
+                Статус
+            </label>
+            <InputSelect id="orderStatus" @bind-Value="@order.OrderStatusId" class="form-control">
+                @foreach (var item in orderStatuses)
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+            </InputSelect>
+        </div>        
+        <div class="form-group">
+            <button type="submit" class="btn btn-custom">Save</button>
+            <button class="btn custom-btn-google" @onclick="ReturnToManagement">Cancel</button>
+        </div>
+    </EditForm>
+
+
+
+@code {
+    [Parameter]
+    public int orderId { get; set; }
+    protected List<OrderStatus> orderStatuses = new();
+    protected Order order = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await GetOrderStatusesList();
+        if (orderId != 0)
+        {
+            order = await _httpClient.GetFromJsonAsync<Order>("api/order/" + orderId);
+        }
+    }
+
+    protected async Task GetOrderStatusesList()
+    {
+        orderStatuses = await _httpClient.GetFromJsonAsync<List<OrderStatus>>("api/orderstatus");
+    }
+
+    protected void ReturnToManagement()
+    {
+        _navManager.NavigateTo("/ordermanagement/incoming");
+    }
+
+    protected async Task SaveOrder()
+    {        
+        if (order.Id != 0)
+        {
+            var orderId = order.Id;
+            var orderStatus = order.OrderStatusId;
+            order = new Order();
+            await _httpClient.PutAsJsonAsync("api/order/changeorderstatus/" + orderId, new OrderStatusDto { OrderStatusId = orderStatus});
+        }
+        else
+        {
+            await _httpClient.PostAsJsonAsync("api/order/createorder", order);
+        }
+        ReturnToManagement();
+    }
+}

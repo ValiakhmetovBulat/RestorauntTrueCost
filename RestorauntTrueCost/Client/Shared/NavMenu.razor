@@ -1,0 +1,115 @@
+﻿<div class="top-row ps-4 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">
+            Oasis            
+        </a>
+        <a class="main-logo"></a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+    <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+        <nav class="flex-column">
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> О нас
+                </NavLink>
+            </div>
+
+            <AuthorizeView>
+                <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" @onclick="() => expandSubProfile = !expandSubProfile">
+                        <span class="oi oi-person" aria-hidden="true"></span> Профиль
+                    </NavLink>
+                    @if (expandSubProfile)
+                    {
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="profile/update">
+                                <span class="oi oi-person" aria-hidden="true"></span> Изменить
+                            </NavLink>
+                        </div>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="profile/orders">
+                                <span class="oi oi-list-rich" aria-hidden="true"></span> История заказов
+                            </NavLink>
+                        </div>
+                    }
+                </div>
+                </Authorized>
+                <NotAuthorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="login">
+                            <span class="oi oi-account-login" aria-hidden="true"></span> Войти
+                        </NavLink>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeView>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" @onclick="() => expandSubMenu = !expandSubMenu">
+                        <span class="oi oi-menu" aria-hidden="true"></span> Меню
+                    </NavLink>
+                    @if (expandSubMenu) {
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="menu">
+                                <span class="oi oi-grid-two-up" aria-hidden="true"></span> Просмотр
+                            </NavLink>
+                        </div>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="order/cart">
+                                <span class="oi oi-bell" aria-hidden="true"></span> Сделать заказ
+                            </NavLink>
+                        </div>
+                    }
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="menu">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Меню
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+
+
+        <AuthorizeView>
+                <Authorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="feedback">
+                            <span class="oi oi-heart" aria-hidden="true"></span> Оставить отзыв
+                        </NavLink>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="contacts">
+                    <span class="oi oi-info" aria-hidden="true"></span> Контакты
+                </NavLink>
+            </div>
+        </nav>
+    </div>
+
+    
+
+
+@code {
+    private bool collapseNavMenu = true;
+    private bool hideNavMenu = false;
+    private bool expandSubProfile;
+    private bool expandSubMenu;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

@@ -1,0 +1,62 @@
+﻿@page "/profile/update"
+@inject NavigationManager _navigationManager
+@inject IProfileViewModel _profile
+@inject HttpClient _httpClient
+
+<PageTitle>Профиль - Изменить</PageTitle>
+
+<div class="info-container">
+    <h2>Профиль</h2>
+    <div class="black-splitter"></div>
+    <div class="col-6">
+        <EditForm Model="_profile" OnValidSubmit="@_profile.UpdateProfile">
+            <DataAnnotationsValidator />
+            <InputText class="form-control" placeholder="Имя" @bind-Value="_profile.Name" />
+            <br />
+            <InputText class="form-control" placeholder="Фамилия" @bind-Value="_profile.Surname" />
+            <br />
+            <InputText class="form-control" placeholder="Email" @bind-Value="_profile.Email" />
+            <ValidationMessage For="@(() => _profile.Email)" />
+            <br />
+            <InputText class="form-control" placeholder="Номер телефона" @bind-Value="_profile.Phone" />
+            <ValidationMessage For="@(() => _profile.Phone)" />
+            <br />
+            <button class="btn btn-custom" type="submit">Обновить профиль</button>
+            <span>&nbsp;&nbsp;</span>@_profile.Message
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationState;
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var claim = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
+            _profile.UserId = Convert.ToInt32(claim?.Value);
+            try
+            {                
+                await _profile.GetProfile();
+            }
+            catch (System.Net.Http.HttpRequestException ex)
+            {
+                if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await _httpClient.GetAsync("api/user/logout");
+                    _navigationManager.NavigateTo("/", true);
+                }
+            }            
+        }
+        else
+        {
+            _navigationManager.NavigateTo("/login");
+        }
+    }
+}

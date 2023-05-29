@@ -1,0 +1,121 @@
+﻿@page "/menu"
+@using RestorauntTrueCost.Shared.Entities
+@inject HttpClient _httpClient
+@inject IMenuViewModel MenuViewModel
+
+<PageTitle>Меню ресторана</PageTitle>
+
+
+    @if (MenuViewModel.MenuSections == null)
+    {
+        <h1>Загрузка ...</h1>
+    }
+    else
+    {
+        <div class="info-container">
+            <h2 class="page-title">Меню</h2>
+            <div class="black-splitter"></div>
+
+            <div class="menu">
+                <ul class="menu-section-container">
+                    @foreach (var s in MenuViewModel.MenuSections)
+                    {
+                        <li>
+                            <a class="@ChangeSectionCssStyle(s)" @onclick="() => MenuViewModel.ChangeSection(s)">
+                                @s.NameRU.ToUpper()
+                            </a>
+                        </li>
+                    }
+                </ul>
+                <div class="menu-field">
+                    <ul class="menu-type-container">
+                        @foreach (var t in MenuViewModel.MenuPositionTypes)
+                        {
+                            if (t.SectionId == MenuViewModel.SelectedSection.Id)
+                            {
+                                <li>
+                                    <a class="@ChangeTypeCssStyle(t)" @onclick="() => MenuViewModel.ChangeTypes(t)">
+                                        @t.NameRu
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                    <div class="card-container">
+                        @foreach (var m in MenuViewModel.MenuPositions)
+                        {
+                            @if (MenuViewModel.SelectedType != null)
+                            {
+                                if (m.PositionTypeId == MenuViewModel.SelectedType.Id)
+                                {
+                                    <div class="card-pos">
+                                        @if (m.Photo != null)
+                                        {
+                                            <img src="/images/positions/@m.Photo" class="img-pos" alt="@m.Name" />
+                                        }
+                                        <h1>@m.Name</h1>
+                                        <span class="position-description">@m.Decription</span>
+                                        <div class="position-price">@m.Price руб.</div>
+                                        <AuthorizeView>
+                                            <Authorized>
+                                            <div class="position-count-panel">
+                                                @{
+                                                    var positionInCart = MenuViewModel.Cart.Find(c => c.MenuPositionId == m.Id);
+
+                                                    if (positionInCart != null)
+                                                    {
+                                                        <button class="btn-add-position" @onclick="() => MenuViewModel.RemoveFromCart(m.Id)">&lt;</button>
+                                                        <div class="position-count">@positionInCart.Count</div>
+                                                        <button class="btn-add-position" @onclick="() => MenuViewModel.AddToCart(m.Id)">></button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="btn-add-position" @onclick="() => MenuViewModel.AddToCart(m.Id)"><span class="oi oi-plus"></span></button>
+                                                    }
+                                                }
+                                            </div>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                        
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+
+
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationState;
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            MenuViewModel.Cart = await MenuViewModel.GetCart();
+        }
+        MenuViewModel.MenuSections = await MenuViewModel.GetMenuPositionSections();
+        MenuViewModel.MenuPositions = await MenuViewModel.GetMenuPositions();
+        MenuViewModel.MenuPositionTypes = await MenuViewModel.GetMenuPositionTypes();        
+    }
+
+    private string ChangeSectionCssStyle(Section section)
+    {
+        return MenuViewModel.SelectedSection.Id == section.Id ? "active-section" : "menu-section";
+    }
+
+    private string ChangeTypeCssStyle(PositionType type)
+    {
+        return MenuViewModel.SelectedType.Id == type.Id ? "active-type" : "menu-type";        
+    }
+}

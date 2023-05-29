@@ -1,0 +1,121 @@
+﻿@page "/management/users/add"
+@page "/management/users/edit/{userId:int}"
+@inject HttpClient _httpClient
+@inject NavigationManager _navManager
+@using Microsoft.AspNetCore.Authorization;
+@inject ViewNavbarService navbarView
+@attribute [Authorize(Roles = "Admin")]
+
+
+<EditForm Model="@user" OnValidSubmit="() => SaveUser()" class="management-container">
+    @if (userId != 0)
+    {
+        <h3>Редактирование @userId</h3>
+        <PageTitle>Редактирование @userId</PageTitle>
+    }
+    else
+    {
+        <h3>Добавление пользователя</h3>
+        <PageTitle>Добавление пользователя</PageTitle>
+    }
+    <DataAnnotationsValidator />
+    <div class="form-group row">
+        <label for="userName" class="col-sm-2 col-form-label">
+            Имя
+        </label>
+        <InputText id="userName" @bind-Value="@user.Name" class="form-control"></InputText>
+        <ValidationMessage For="@(() => @user.Name)" />
+        <br />
+        <label for="userSurname" class="col-sm-2 col-form-label">
+            Фамилия
+        </label>
+        <InputText id="userSurname" @bind-Value="@user.Surname" class="form-control"></InputText>
+        <br />
+        <label for="userEmail" class="col-sm-2 col-form-label">
+            Email
+        </label>
+        <InputText id="userEmail" @bind-Value="@user.Email" class="form-control"></InputText>
+        <ValidationMessage For="@(() => @user.Email)" />
+        <br />
+        <label for="userPassword" class="col-sm-2 col-form-label">
+            Пароль
+        </label>
+        <InputText id="userPassword" @bind-Value="@user.Password" class="form-control"></InputText>
+        <ValidationMessage For="@(() => @user.Password)" />
+        <br />
+        <label for="userPhone" class="col-sm-2 col-form-label">
+            Телефон
+        </label>
+        <InputText id="userPhone" @bind-Value="@user.Phone" class="form-control"></InputText>
+        <br />
+        <label for="userRole" class="col-sm-2 col-form-label">
+            Роль
+        </label>
+        <InputSelect id="userRole" @bind-Value="@user.RoleId" class="form-control">
+            @foreach (var role in userRoles)
+            {
+                <option value="@role.Id">@role.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-custom">Save</button>
+        <button class="btn custom-btn-google" @onclick="ReturnToManagement">Cancel</button>
+    </div>
+    </EditForm>
+
+
+
+@code {
+    [Parameter]
+    public int userId { get; set; }
+
+    protected List<Role> userRoles = new();
+    protected User user = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        navbarView.Hide();
+        await GetUserRolesList();
+        if (userId != 0)
+        {
+            user = await _httpClient.GetFromJsonAsync<User>("api/user/getbyid/" + userId);
+        }
+    }
+
+    protected async Task GetUserRolesList()
+    {
+        userRoles = await _httpClient.GetFromJsonAsync<List<Role>>("api/role");
+    }
+
+    protected void ReturnToManagement()
+    {
+        _navManager.NavigateTo("/management/users");
+    }
+
+    protected async Task SaveUser()
+    {
+        if (user.Id != 0)
+        {
+            var userToUpdate = new UpdateUserDto
+            {
+                    RoleId = user.RoleId,
+                    Email = user.Email,
+                    Phone = user.Phone,
+                    Name = user.Name,
+                    Surname = user.Surname
+            };
+            await _httpClient.PutAsJsonAsync(
+                "api/user/update/" + userId, 
+                userToUpdate);
+        }
+        else
+        {
+            if (user.RoleId == 0)
+            {
+                user.RoleId = 3;
+            }
+            await _httpClient.PostAsJsonAsync("api/user/create", user);
+        }
+    }
+}

@@ -1,0 +1,228 @@
+﻿@page "/management/users"
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "Admin")]
+@using RestorauntTrueCost.Shared.Entities
+@inject IOrderManagementViewModel _orderManagment
+@inject HttpClient Http
+@inject ViewNavbarService ViewNavBar
+@inject IJSRuntime jsRuntime
+
+<AuthorizeView Roles="Admin">
+    <div class="management-container">
+
+        <div class="nav-management">
+            <a class="management-title" href="/ordermanagement/incoming">Ближайшие заказы</a>
+            <a class="management-title" href="/ordermanagement/archive">Архив заказов</a>
+            <a class="management-title active-management-title">Пользователи</a>
+        </div>
+
+        <br />
+        <div class="row">
+            <div class="col-md-6">
+                <a href='/management/users/add' class="btn btn-custom" role="button">
+                    <i class="fas fa-user-plus"></i>
+                    Добавить пользователя
+                </a>
+            </div>
+            <div class="input-group col">
+                <InputSelect TValue="int" ValueExpression="@(() => selectedRoleId)" Value="selectedRoleId" ValueChanged="OnRoleChanged" class="form-control">
+                    <option value="0">Все пользователи</option>
+                    @foreach (var role in Roles)
+                    {
+                        <option value="@role.Id">@role.Name</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="input-group col">
+                <input type="text" class="form-control" placeholder="search by name" @bind="@SearchString" @bind:event="oninput" @onkeyup="() => SortUsers()" />
+                @if (SearchString.Length > 0)
+                {
+                    <div class="input-group-append">
+                        <button class="btn btn-danger" @onclick="ResetSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+        <br />
+        @if (SearchUserList == null)
+        {
+            <p><em>Загрузка...</em></p>
+        }
+        else
+        {
+            <table class="table table-striped align-middle table-bordered">
+                <thead class="table-success">
+                    <tr>
+                        <th>ID</th>
+                        <th>Дата регистрации</th>
+                        <th>Email</th>
+                        <th>Пароль</th>
+                        <th>Имя</th>
+                        <th>Фамилия</th>
+                        <th>Телефон</th>
+                        <th>Права доступа</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in SearchUserList)
+                    {
+
+                        <tr>
+                            <td>@user.Id</td>
+                            <td>@user.RegistrationDate</td>
+                            <td>@user.Email</td>
+                            <td>@user.Password</td>
+                            <td>@user.Name</td>
+                            <td>@user.Surname</td>
+                            <td>@user.Phone</td>
+                            <td>@user.Role.Name</td>
+                            <td>
+                                <button class="btn btn-outline-danger" role="button" @onclick="async ()=> await DeleteUser(user)">
+                                    Удалить
+                                </button>
+                            </td>
+                            <td>
+                                <a href='/management/users/edit/@user.Id' class="btn btn-custom" role="button">
+                                    Редактировать
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        } 
+        
+    </div>
+</AuthorizeView>
+
+@code {
+    protected int selectedRoleId = 0;
+    protected List<Role> Roles = new();
+    protected List<User> UserList = new();
+    protected List<User> SearchUserList = new();
+    protected string SearchString { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewNavBar.Hide();
+        await GetUsers();
+        await GetRoles();
+    }
+
+    protected async Task GetRoles()
+    {
+        Roles = await Http.GetFromJsonAsync<List<Role>>("api/role");
+    }
+
+    protected async Task GetUsers()
+    {
+        UserList = await Http.GetFromJsonAsync<List<User>>("api/user");
+        UserList = UserList.OrderBy(u => u.RegistrationDate).ToList();
+        SearchUserList = UserList;
+    }
+
+    private async Task DeleteUser(User user)
+    {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>(
+            "confirm", 
+            $"Вы действительно хотите удалить ползователя: |{user.Id}| {user.Surname} {user.Name}?");
+
+        if (confirmed)
+        {
+            var result = await Http.DeleteFromJsonAsync<User>($"api/user/delete/{user.Id}");
+            await GetUsers();
+            SortUsers();
+        }
+    }
+
+    private void OnRoleChanged(int role)
+    {
+        selectedRoleId = role;
+
+        SortUsers();        
+    }
+
+    private void OnSearchValueChanged(string searchString)
+    {
+        SearchString = searchString;
+
+        SortUsers();
+    }
+
+    protected void SortUsers()
+    {
+        var sorted = UserList;
+
+        sorted = SortByRole(sorted);  
+        sorted = SearchUser(sorted);
+
+        SearchUserList = sorted;
+        StateHasChanged();
+    }
+
+    protected List<User> SortByRole(List<User> users)
+    {
+        if (selectedRoleId != 0)
+        {
+            users = users.Where(u => u.RoleId == selectedRoleId).ToList();
+        }
+
+        return users;        
+    }
+
+    protected List<User> SearchUser(List<User> users)
+    {
+        var searchStringLower = SearchString.ToLower();
+
+        if (!string.IsNullOrEmpty(searchStringLower))
+        {
+            users = users.Where(user => UserSearchCondition(user, searchStringLower)).ToList();
+        }
+
+        return users;
+    }
+
+    private static bool UserSearchCondition(User user, string searchString)
+    {
+        if (!string.IsNullOrWhiteSpace(user.Name) && user.Name.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.Surname) && user.Surname.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.Phone) && user.Phone.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (user.Id.ToString().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (user.RegistrationDate.ToString().ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (user.Email.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void ResetSearch()
+    {
+        SearchString = string.Empty;
+        SearchUserList = UserList;
+    }
+}
+

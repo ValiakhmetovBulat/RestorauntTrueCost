@@ -1,0 +1,124 @@
+﻿@page "/order/tables"
+@inject NavigationManager _navigationManager
+@inject IOrderViewModel _order
+
+<PageTitle>Оформление заказа</PageTitle>
+
+<div class="info-container">
+    <h2 class="page-title">Оформление заказа</h2>
+    <div class="black-splitter"></div>    
+    <div class="col-6">
+        <p>
+            Дорогой гость ! С помощью данного онлайн приложения вы можете оформить заказ с учетом алгоритма True Cost.
+        </p>
+    </div>
+    <div class="col-6">
+        <InputSelect @bind-Value="_order.FromTo">
+            <option value="">Выберете время</option>
+            @foreach (var item in _order.Periods)
+            {
+                if (DateTime.Now.Date != _order.ReservedDate)
+                {
+                    <option value="@item.FromTo">@item.FromTo</option>
+                }
+                else
+                {
+                    if ((int.Parse(item.FromTo.Substring(0, 2))) > int.Parse(DateTime.Now.Hour.ToString()))
+                    {
+                        <option value="@item.FromTo">@item.FromTo</option>
+                    }
+                }
+            }
+        </InputSelect>
+        <input type="date" @bind-value="_order.ReservedDate" min="@MinDate" max="@MaxDate"/>
+    </div>
+    <br />
+    <div class="map-container">
+        <table class="map">
+            <tr>
+                <td><TableComponent TableNum="100" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableEmpty></TableEmpty></td>
+                <td class="entry-container"><div class="entry">Вход</div></td>
+                <td><TableEmpty></TableEmpty></td>
+                <td><TableComponent TableNum="101" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableEmpty></TableEmpty></td>
+                <td><TableComponent TableNum="102" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+            </tr>
+            <tr>
+                <td><TableComponent TableNum="103" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableComponent TableNum="104" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableEmpty></TableEmpty></td>
+                <td><TableComponent TableNum="105" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableEmpty></TableEmpty></td>
+                <td><TableComponent TableNum="106" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableEmpty></TableEmpty></td>
+                <td><TableComponent TableNum="107" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"> </TableComponent></td>
+            </tr>
+            <tr>
+                <td><TableComponent TableNum="108" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableEmpty></TableEmpty></td>
+                <td><TableComponent TableNum="109" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableEmpty></TableEmpty></td>
+                <td><TableComponent TableNum="110" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableComponent TableNum="111" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+            </tr>
+            <tr>
+                <td><TableComponent TableNum="112" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableEmpty></TableEmpty></td>
+                <td><TableComponent TableNum="113" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableEmpty></TableEmpty></td>
+                <td><TableComponent TableNum="114" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+                <td><TableEmpty></TableEmpty></td>
+                <td><TableComponent TableNum="115" SendTable="t => AddTableToOrder(t)" @bind-FromTo="_order.FromTo" @bind-ResrevedDate="_order.ReservedDate" ClearTablesByDate="() => _order.ClearTables()" ClearTablesByFromTime="() => _order.ClearTables()"></TableComponent></td>
+            </tr>
+        </table>       
+        
+    </div>    
+    <br />
+    <div class="col-6">
+        Сумма забронированных мест (True Cost) : @_order.CalculateTotalSum()
+    </div>
+    <br />
+    <div class="col-6">
+        <button class="btn btn-custom" type="submit" @onclick="() => CreateOrder()">Продолжить</button>
+    </div>
+    <br />
+    <Message IsShown=@isAuthError MessageText="@_order.Message" IsSuccess=false/>
+</div>
+
+
+
+
+
+@code {
+    private bool isAuthError => string.IsNullOrWhiteSpace(_order.Message) ? false : true;
+    private string MaxDate { get; } = DateTime.Now.AddMonths(3).ToString("s").Split('T')[0];
+    private string MinDate { get; } = DateTime.UtcNow.ToString("s").Split('T')[0];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await _order.GetPeriodsAsync();
+        await _order.GetCart();
+    }
+
+    private void AddTableToOrder(Table table)
+    {
+        if (_order.Tables.Contains(table))
+        {
+            _order.Tables.Remove(table);
+        }   
+        else
+        {
+            _order.Tables.Add(table);
+        }
+    }    
+
+    public async Task CreateOrder()
+    {
+        await _order.CreateOrder();
+        if (!string.IsNullOrWhiteSpace(_order.FromTo))
+            _navigationManager.NavigateTo("order/formed");
+    }
+    
+
+}

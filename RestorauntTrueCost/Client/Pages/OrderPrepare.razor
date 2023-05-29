@@ -1,0 +1,45 @@
+﻿@page "/order/cart"
+@inject IOrderPrepareViewModel OrderPrepareViewModel
+@inject NavigationManager _navigationManager
+
+<PageTitle>Оформление заказа</PageTitle>
+
+<div class="info-container">
+    <h2 class="page-title">Оформление заказа</h2>
+    <div class="black-splitter"></div>
+    <Message IsSuccess=false MessageText="Внимание ! Ваша корзина пуста. Чтобы добавить позиции к заказу, перейдите в меню" IsShown=isCartEmpty></Message>
+    <div class="col-6">
+        <p>
+            Дорогие гости ! С помощью данного онлайн приложения вы можете оформить заказ с учетом алгоритма True Cost.
+        </p>
+    </div>    
+    <div class="col-6">
+        <button class="btn btn-custom" @onclick="() => GoToMenu()">В меню</button>
+        <button class="btn btn-custom" @onclick="() => GoToTables()">Перейти к выбору столов</button>
+    </div>
+    <br />
+    <br />
+    
+</div>
+
+<CartPosition></CartPosition>
+    
+
+@code {
+    private bool isCartEmpty { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isCartEmpty = await OrderPrepareViewModel.IsCartEmpty();
+    }
+
+    private void GoToMenu()
+    {
+        _navigationManager.NavigateTo("menu");
+    }
+
+    private void GoToTables()
+    {
+        _navigationManager.NavigateTo("/order/tables");
+    }
+}

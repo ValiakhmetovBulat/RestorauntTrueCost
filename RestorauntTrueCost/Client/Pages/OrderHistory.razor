@@ -1,0 +1,107 @@
+﻿@page "/profile/orders"
+@inject IOrderHistoryViewModel OrderHistoryViewModel
+
+<PageTitle>История заказов</PageTitle>
+
+<div class="info-container">
+    <h2 class="page-title">История заказов</h2>
+    <div class="black-splitter"></div>
+    <Message IsSuccess=false MessageText="История заказов пуста" IsShown=isHistoryEmpty></Message>       
+    
+</div>
+
+<div class="order-history-container">
+    @foreach (var item in OrderHistoryViewModel.OrderHistory)
+    {
+        <table class="order-history-table">
+            <tr>
+                <td colspan="4" class="order-history-header">
+                    Заказ №@item.Id
+                </td>
+
+
+            </tr>
+            <tr>
+                <td class="order-history-section" colspan="4">
+                    Состав заказа
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Наименование
+                </td>
+                <td>
+                    Количество
+                </td>
+            </tr>
+            @foreach (var position in item.OrderToPositions)
+            {
+                <tr>
+                    <td>
+                        @position.MenuPosition.Name
+                    </td>
+                    <td>
+                        @position.Count
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td class="order-history-section" colspan="4">
+                    Забронированные столы
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Номер стола
+                </td>
+                <td>
+                    Количество гостей
+                </td>
+                <td>
+                    Дата
+                </td>
+                <td>
+                    Время
+                </td>
+            </tr>
+            @foreach (var table in item.TableOrders)
+            {
+                <tr>
+                    <td>
+                        @table.Table.TableNum
+                    </td>
+                    <td>
+                        @table.Table.GuestNum
+                    </td>
+                    <td>
+                        @GetShortDate(table.ReservedDate)
+                    </td>
+                    <td>
+                        @table.OrderPeriod.FromTo
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="4">Итого к оплате: @item.TotalSum</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="background-color:@item.OrderStatus.HashColor;text-align:center;color:black;">Статус: @item.OrderStatus.Name</td>
+            </tr>
+        </table>
+
+    }
+</div>
+
+@code {
+    private bool isHistoryEmpty => OrderHistoryViewModel.OrderHistory.Count == 0 ? true : false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OrderHistoryViewModel.GetOrderHistory();
+    }
+
+    private string GetShortDate(DateTime date)
+    {
+        return date.ToShortDateString();
+    }
+}

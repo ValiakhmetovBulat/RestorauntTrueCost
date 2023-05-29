@@ -1,0 +1,65 @@
+﻿@page "/registration"
+@inject NavigationManager _navigationManager
+@inject IRegistrationViewModel _registrationModel
+
+<PageTitle>Зарегистрироваться</PageTitle>
+
+<div class="info-container">
+    <h2 class="page-title">Регистрация</h2>
+    <div class="black-splitter"></div>
+    <div class="col-6 @DivMessageBlockCssClass">
+        <div class="message-block @DivMessageColorCssClass">
+            @_registrationModel.Message
+        </div>
+    </div>
+    <div class="col-6">
+        <EditForm Model="_registrationModel" OnValidSubmit="@RegisterUser">
+            <DataAnnotationsValidator />
+            <label for="reg-email" class="col-form-label">
+                Email
+            </label>
+            <InputText id="reg-email" class="form-control" placeholder="Email" @bind-Value="_registrationModel.Email" />
+            <ValidationMessage For="@(() => _registrationModel.Email)" />
+            <br />
+            <label for="reg-password" class="col-form-label">
+                Пароль
+            </label>
+            <InputText id="reg-password" type="password" class="form-control" placeholder="Пароль" @bind-Value="_registrationModel.Password" />
+            <ValidationMessage For="@(() => _registrationModel.Password)"/>
+            <br />
+            <label for="reg-re-password" class="col-form-label">
+                Повторите пароль
+            </label>
+            <InputText id="reg-re-password" type="password" class="form-control" placeholder="Повторите пароль" @bind-Value="_registrationModel.PasswordConfirmation" />
+            <ValidationMessage For="@(() => _registrationModel.PasswordConfirmation)" />
+            <br />
+            <button class="btn btn-custom" type="submit">Регистрация</button>
+        </EditForm>        
+    </div>   
+    <br />
+    <div class="col-6">
+        <p>Уже зарегестрированы в системе? <a href="login">Войти</a></p>
+    </div>
+</div>
+
+@code {
+    private bool isRegError = false;
+    private bool showMessage = false;
+    private string? DivMessageBlockCssClass => showMessage ? "show-div-message" : "hide-div-message";
+    private string? DivMessageColorCssClass => isRegError ? "error-color" : "success-color";
+
+    public async Task RegisterUser()
+    {
+        var resp = await _registrationModel.Register();
+
+        showMessage = true;
+        if (resp.StatusCode == System.Net.HttpStatusCode.OK)
+        {            
+            isRegError = false;
+        }
+        else
+        {
+            isRegError = true;
+        }
+    }
+}

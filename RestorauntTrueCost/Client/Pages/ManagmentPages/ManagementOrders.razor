@@ -1,0 +1,270 @@
+﻿@page "/ordermanagement/incoming"
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "Manager,Admin")]
+@using RestorauntTrueCost.Shared.Entities
+@inject IOrderManagementViewModel _orderManagment
+@inject HttpClient Http
+@inject ViewNavbarService ViewNavBar
+
+<AuthorizeView Roles="Manager,Admin">  
+    <div class="management-container">
+
+        <div class="nav-management">
+            <a class="management-title active-management-title">Ближайшие заказы</a>
+            <a class="management-title" href="/ordermanagement/archive">Архив заказов</a>
+            @if (userRole == "Admin")
+            {
+                <a class="management-title" href="/management/users">Пользователи</a>
+            }
+        </div>        
+
+        <br/>
+        <div class="row">
+            <div class="col-md-6">
+                <a href='/ordermanagement/add' class="btn btn-primary" role="button">
+                    <i class="fas fa-user-plus"></i>
+                    Добавить заказ
+                </a>
+            </div>
+            <div class="input-group col">
+                <InputSelect TValue="int" ValueExpression="@(() => selectedStatusId)" Value="selectedStatusId" ValueChanged="OnStatusChanged" class="form-control">
+                    <option value="0">Все заказы</option>
+                    @foreach (var status in OrderStatuses)
+                    {
+                        <option value="@status.Id">@status.Name</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="input-group col">
+                <input type="text" class="form-control" placeholder="Искать по ФИО"
+                       @bind="SearchString" @bind:event="oninput" @onkeyup="() => SortOrders()" />
+                @if (SearchString.Length > 0)
+                {
+                    <div class="input-group-append">
+                        <button class="btn btn-danger" @onclick="ResetSearch">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+        <br />
+        @if (OrderList == null)
+        {
+            <p><em>Загрузка...</em></p>
+        }
+        else
+        {
+            <table class="table table-striped align-middle table-bordered">
+                <thead class="table-success">
+                    <tr>
+                        <th>ID</th>
+                        <th>Дата создания заказа</th>
+                        <th>ФИО гостя</th>
+                        <th>Общая сумма</th>
+                        <th>Статус заказа</th>
+                        <th>Забронированные столы</th>
+                        <th>Время</th>                        
+                        <th>Email</th>
+                        <th>Номер телефона</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in SearchOrderData)
+                    {
+
+                        <tr>
+                            <td>@order.Id</td>
+                            <td>@order.CreatedDate</td>
+                            <td>@order.User</td>
+                            <td>@order.TotalSum</td>
+                            <td>@order.OrderStatus.Name</td>
+                            <td>
+                                @{
+                                    string reservedTables;
+                                    int countTables = 1;
+
+                                    foreach (var item in order.TableOrders)
+                                    {
+                                        reservedTables = $"{countTables}. {item.Table.TableNum}";
+                                        countTables++;
+                                        @reservedTables
+                                        <br />
+                                    }
+
+                                }
+
+                            </td>
+                            <td>
+                                @{
+                                    string reservedTime;
+                                    int countTime = 1;
+
+                                    foreach (var item in order.TableOrders)
+                                    {
+                                        reservedTime = $"{countTime}. {item.ReservedDate.ToShortDateString()}:{item.OrderPeriod.FromTo}";
+                                        countTime++;
+                                        @reservedTime
+                                        <br />
+                                    }
+                                }
+
+                            </td>                            
+                            <td>@order.User.Email</td>
+                            <td>@order.User.Phone</td>
+                            @if (userRole == "Admin")
+                            {
+                                <td>
+                                    <a href='/user/delete/@order.Id' class="btn btn-outline-danger" role="button">
+                                        Удалить
+                                    </a>
+                                </td>
+                            }
+                            <td>
+                                <a href='/ordermanagement/edit/@order.Id' class="btn btn-custom" role="button">
+                                    Редактировать
+                                </a>
+                            </td>
+                            <td>
+                                <a href='/ordermanagement/details/@order.Id' class="btn btn-custom" role="button">
+                                    Детали заказа
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        }
+    </div>    
+</AuthorizeView>
+    
+@code {
+    private string userRole;
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; }
+
+    protected int selectedStatusId = 0;
+    protected List<Order> OrderList = new();
+    protected List<Order> SearchOrderData = new();
+    protected Order Order = new();
+    protected List<OrderStatus> OrderStatuses = new();
+    protected string SearchString { get; set; } = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        ViewNavBar.Hide();
+        await GetOrder();
+        await GetStatuses();
+        var authState = await authenticationState;
+        var authUser = authState.User;
+        var claim = authUser.FindFirst(c => c.Type == ClaimTypes.Role);
+        userRole = claim?.Value.ToString();
+    }
+
+    protected void SortOrders()
+    {
+        var sorted = OrderList;
+
+        sorted = SearchOrder(sorted);
+        sorted = SortByStatus(sorted);
+
+        SearchOrderData = sorted;
+        StateHasChanged();
+    }
+
+    private void OnStatusChanged(int role)
+    {
+        selectedStatusId = role;
+
+        SortOrders();
+    }
+
+    protected List<Order> SortByStatus(List<Order> orders)
+    {
+        if (selectedStatusId != 0)
+        {
+            orders = orders.Where(o => o.OrderStatusId == selectedStatusId).ToList();
+        }
+
+        return orders;
+    }
+
+    protected async Task GetStatuses()
+    {
+        OrderStatuses = await Http.GetFromJsonAsync<List<OrderStatus>>("api/orderstatus");
+    }
+
+    protected async Task GetOrder()
+    {
+        OrderList = await Http.GetFromJsonAsync<List<Order>>("api/order");          
+        SearchOrderData = OrderList;
+    }
+
+    protected List<Order> SearchOrder(List<Order> orders)
+    {
+        var searchStringLower = SearchString.ToLower();
+
+        if (!string.IsNullOrWhiteSpace(searchStringLower))
+        {
+            orders = orders.Where(order => OrderSearchCondition(order, searchStringLower)).ToList();
+        }
+
+        return orders;
+    }
+
+    private static bool OrderSearchCondition(Order order, string searchString)
+    {
+        if (!string.IsNullOrWhiteSpace(order.User.Surname) && order.User.Surname.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(order.User.Name) && order.User.Name.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(order.User.Phone) && order.User.Phone.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (order.OrderStatus.Name.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (order.Id.ToString().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (order.CreatedDate.ToString().Contains(searchString))
+        {
+            return true;
+        }
+        
+        if (order.TotalSum.ToString().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (order.User.Email.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected void DeleteConfirm(int orderId)
+    {
+        Order = OrderList.FirstOrDefault(x => x.Id == orderId);
+    }
+    public void ResetSearch()
+    {
+        SearchString = string.Empty;
+        OrderList = SearchOrderData;
+    }
+}
+

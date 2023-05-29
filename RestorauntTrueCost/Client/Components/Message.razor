@@ -1,0 +1,17 @@
+﻿<div class="col-6 @ShowMessageCssClass">
+    <div class="message-block @MessageColorCssClass">
+        @MessageText
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string MessageText { get; set; }
+    [Parameter]
+    public bool IsShown { get; set; }
+    [Parameter]
+    public bool IsSuccess { get; set; }
+
+    public string ShowMessageCssClass => IsShown ? "show-div-message" : "hide-div-message";
+    public string MessageColorCssClass => IsSuccess ? "success-color" : "error-color";
+}

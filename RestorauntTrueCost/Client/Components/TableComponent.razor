@@ -1,0 +1,166 @@
+﻿@inject HttpClient _httpClient
+
+@if (isReserved)
+{    
+    <div class="table-container reserved-table-container">
+        <div class="chair-container">
+            @for (int i = 0; i < Guests / 2; i++)
+            {
+
+                <div class="chair-top"></div>
+
+            }
+        </div>
+        <div class="@TableTypeCssClass() table-reserved">
+            <span class="table-num-text">
+                @TableNum
+            </span>
+        </div>
+        <div class="chair-container">
+            @for (int i = 0; i < Guests / 2; i++)
+            {
+
+                <div class="chair-bottom"></div>
+
+            }
+        </div>
+    </div>
+}
+else
+{    
+    <div class="table-container @TableContainerCssClass" @onclick="AddRemoveTableToOrder">
+        <div class="chair-container">
+            @for (int i = 0; i < Guests / 2; i++)
+            {
+                <div class="chair-top"></div>
+
+            }
+        </div>
+        <div class="@TableTypeCssClass()">
+            <span class="table-num-text">
+                @TableNum
+            </span>
+        </div>
+        <div class="chair-container">
+            @for (int i = 0; i < Guests / 2; i++)
+            {
+                
+                <div class="chair-bottom"></div>
+
+            }
+        </div>
+    </div>
+}
+
+
+@code {
+    private string _fromTo;
+    private DateTime _reservedDate;
+
+    [Parameter]
+    public string FromTo 
+    { 
+        get => _fromTo;
+        set
+        {
+            if (_fromTo == value) return;
+            _fromTo = value;
+            FromToChanged.InvokeAsync(value);
+            ClearTablesByFromTime.InvokeAsync(value);
+            SelectedTable = false;
+            GetReservations();
+        } 
+    }
+
+    [Parameter]
+    public EventCallback<string> FromToChanged { get; set; }
+
+    [Parameter]
+    public int TableNum { get; set; }
+
+    [Parameter]
+    public EventCallback<Table> SendTable { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ClearTablesByFromTime { get; set; } 
+
+    [Parameter]
+    public EventCallback<DateTime> ClearTablesByDate { get; set; }
+
+    [Parameter]
+    public DateTime ResrevedDate 
+    { 
+        get => _reservedDate;
+        set
+        {
+            if (_reservedDate == value) return;
+            _reservedDate = value;
+            ResrevedDateChanged.InvokeAsync(value);
+            ClearTablesByDate.InvokeAsync(value);
+            SelectedTable = false;
+            GetReservations();
+        } 
+    }
+
+    [Parameter]
+    public EventCallback<DateTime> ResrevedDateChanged { get; set; }
+
+    private Table? Table { get; set; }
+
+    private int Guests { get; set; }
+
+    private bool SelectedTable = false;
+
+    private bool isReserved { get; set; } = false;
+
+    public string? TableContainerCssClass => SelectedTable ? "selected-table-container" : null;    
+
+    protected override async Task OnInitializedAsync()
+    {
+        var table = await _httpClient.GetFromJsonAsync<Table>("api/table/tablebynum/" + TableNum.ToString());
+        Table = table;
+        Guests = Table.GuestNum;        
+    }
+
+    private async Task GetReservations()
+    {
+        if (!string.IsNullOrWhiteSpace(FromTo))
+        {
+            var tableOrders = await _httpClient.GetFromJsonAsync<List<TableOrder>>("api/tableorder");
+
+            var tableFound = tableOrders.Where(t => t.Table.TableNum == Table.TableNum && t.OrderPeriod.FromTo == FromTo && t.ReservedDate == ResrevedDate).ToList();
+
+            if (tableFound.Count > 0)
+            {
+                isReserved = true;                
+            }
+            else
+            {
+                isReserved = false;
+            }
+        }
+        else
+        {
+            isReserved = true;
+        }
+        StateHasChanged();
+    }
+
+    private string TableTypeCssClass()
+    {
+        if (Guests == 6)
+            return "table6p";
+        if (Guests == 4)
+            return "table4p";
+        if (Guests == 2)
+            return "table2p";
+
+        return "empty-table";
+    }    
+
+    private void AddRemoveTableToOrder()
+    {
+        SelectedTable = !SelectedTable;
+        SendTable.InvokeAsync(Table);
+    }
+}

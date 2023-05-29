@@ -1,0 +1,66 @@
+﻿@page "/login"
+@inject ILoginViewModel _loginViewModel
+@inject NavigationManager _navigationManager
+
+<div class="info-container">
+    <h2 class="page-title">Вход</h2>
+    <div class="black-splitter"></div>
+    <div class="col-6 @DivErrorCssClass">
+        <div class="message-block error-color">
+            <div class="error-icon">
+            </div>
+            @_loginViewModel.Message
+        </div>
+    </div>
+    <div class="col-6">
+        <label for="input-email" class="col-form-label">Email</label>
+        <input type="text" class="form-control" id="input-email" @bind="@_loginViewModel.Email" placeholder="Email" />
+    </div>
+    <br />
+    <div class="col-6">
+        <label for="input-password" class="col-form-label">Пароль</label>
+        <input type="password" id="input-password" class="form-control" @bind="@_loginViewModel.Password" placeholder="Пароль"/>
+    </div>
+    <br />
+    <div class="col-6">
+        <button class="btn btn-custom" @onclick="LoginUser">Войти</button>
+    </div>
+    <br />
+    <div class="col-6">
+        <a class="custom-btn-google btn-google" @onclick="GoogleSignIn">
+            <span class="fa fa-google"></span> <b>Войти с Google</b>
+        </a>
+    </div>
+    <br/>
+    <div class="col-6">
+        <p>Впервые у нас? <a href="registration">Регистрация</a></p>
+    </div>
+    <div class="col-6">
+        <p>Забыли пароль? <a href="registration">Восстановить</a></p>
+    </div>
+</div>
+
+
+@code {
+    private bool isAuthError = false;
+    private string? DivErrorCssClass => isAuthError ? "show-div-message" : "hide-div-message";
+
+    public async Task LoginUser()
+    {
+        var resp = await _loginViewModel.LoginUser();
+
+        if (resp.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            _navigationManager.NavigateTo("/profile/update", true);
+        }
+        else
+        {
+            isAuthError = true;
+        }
+    }
+
+    private void GoogleSignIn()
+    {
+        _navigationManager.NavigateTo("api/user/GoogleSignIn", true);
+    }
+}

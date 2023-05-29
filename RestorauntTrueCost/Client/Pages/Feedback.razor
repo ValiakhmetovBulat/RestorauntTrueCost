@@ -1,0 +1,80 @@
+﻿@page "/feedback"
+@using System.Security.Claims
+@inject IFeedbackViewModel _feedback
+@inject NavigationManager _navigationManager
+
+<PageTitle>Оставить отзыв</PageTitle>
+
+<body>
+    <div class="info-container">
+        <h2 class="page-title">Прямая связь с руководством</h2>
+        <div class="black-splitter"></div>
+        
+            <div class="form-group col-6">
+                <p>
+                    Дорогие гости, если Вам понравилось или не понравилось обслуживание в ресторане, вы можете связаться напрямую с руководством через эту форму.
+                    Все отзывы будут обязательно рассмотрены. <br> <br>
+
+                    Не забывайте указывать варианты связи с Вами. Спасибо !
+                </p>
+            </div>
+
+            <EditForm Model="_feedback" class="feedback" OnValidSubmit="_feedback.SendFeedback">
+                <DataAnnotationsValidator />
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group col-6">
+                    <input class="form-control" type="date" @bind-value="_feedback.DateOfVisit" min="@MinDate" max="@MaxDate" />
+                </div>
+                <br />
+                <div class="form-group col-6">
+                    <InputNumber class="form-control" @bind-Value="_feedback.NumberOfGuests" placeholder="Количество гостей" />
+                    <ValidationMessage For="@(() => _feedback.NumberOfGuests)" />
+                </div>
+                <br />
+                <div class="form-group col-6">
+                    <InputNumber class="form-control" @bind-Value="_feedback.TableNumber" placeholder="Номер стола" />
+                    <ValidationMessage For="@(() => _feedback.TableNumber)" />
+                </div>
+                <br />
+                <div class="form-group col-6">
+                    <InputTextArea type="text" class="form-control tb-comment" placeholder="Комментарий" @bind-Value="_feedback.Message" />
+                    <ValidationMessage For="@(() => _feedback.Message)" />
+                </div>
+                <br />
+                <div class="form-group col-md-5 btn-container">
+                    <button type="submit" class="btn btn-custom">Отправить</button>
+                    <br />
+                </div>
+                <br />
+                <Message IsShown=ShowMessage IsSuccess=true MessageText="@_feedback.Status"></Message>
+            </EditForm>
+
+        
+    </div>
+</body>
+
+@code {
+    private string MaxDate { get; } = DateTime.UtcNow.ToString("s").Split('T')[0];
+    private string MinDate { get; } = new DateTime(2023, 1, 1, 0, 0, 0, DateTimeKind.Utc).ToString("s").Split('T')[0];
+    private bool ShowMessage => string.IsNullOrWhiteSpace(_feedback.Status) ? false : true;
+
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var authState = await authenticationState;
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var claim = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
+            _feedback.UserId = Convert.ToInt32(claim?.Value);
+        }
+        else
+        {
+            _navigationManager.NavigateTo("/login");
+        }
+    }
+}

@@ -1,0 +1,79 @@
+﻿@using System.Security.Claims;
+@inherits LayoutComponentBase
+@inject ViewNavbarService ViewNavbar
+@inject NavigationManager _navigationManager
+@inject HttpClient _httpClient
+
+<div class="page">   
+
+    <div class="sidebar @ViewNavbar.NavBarClass">
+        <NavMenu />        
+    </div>    
+
+    <main>
+        <AuthorizeView>
+            <Authorized>                
+                <div class="top-row px-4 do-not-justify">
+                    @if (_userRole == "Admin")
+                    {
+                        <button class="btn btn-custom" @onclick="OpenAdminPanel" style="margin:10px">Панель администратора</button>
+                    }
+                    <b class="profile-message">@_email</b>&nbsp;&nbsp;&nbsp;
+                    <button class="btn-logout" @onclick="LogoutUser">Выйти</button>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="top-row px-4 do-not-justify">
+
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>       
+        
+        <div>
+            @Body
+        </div>
+    </main>
+</div>
+
+@code {
+    private string? _email;
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; }
+
+    private string _userRole;
+
+    private async Task LogoutUser()
+    {
+        await _httpClient.GetAsync("api/user/logout");
+        _navigationManager.NavigateTo("/", true);
+    }
+
+    private void LoginUser()
+    {
+        _navigationManager.NavigateTo("/login", true);
+    }
+
+    private void OpenAdminPanel()
+    {
+        _navigationManager.NavigateTo("/ordermanagement/incoming", true);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewNavbar.OnChanged = () =>
+        {
+            StateHasChanged();
+        };
+
+        var authState = await authenticationState;
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {            
+            var claim = user.FindFirst(c => c.Type == ClaimTypes.Email);
+            _email = claim?.Value.ToString();
+            var claimRole = user.FindFirst(c => c.Type == ClaimTypes.Role);
+            _userRole = claimRole.Value.ToString();
+        }
+    }
+}
