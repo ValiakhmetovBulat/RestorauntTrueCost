@@ -1,0 +1,140 @@
+﻿@page "/management/menu/positions/add"
+@page "/management/menu/positions/edit/{menuPositionId:int}"
+@inject HttpClient _httpClient
+@inject NavigationManager _navManager
+@using Microsoft.AspNetCore.Authorization;
+@inject ViewNavbarService navbarView
+@attribute [Authorize(Roles = "Admin")]
+
+<EditForm Model="@menuPosition" OnValidSubmit="() => SaveMenuPosition()" class="management-container">
+    @if (menuPositionId != 0)
+    {        
+        <h3>Редактирование позиции меню @menuPositionId</h3>
+        <PageTitle>Редактирование позиции меню @menuPositionId</PageTitle>
+    }
+    else
+    {
+        <h3>Добавление позиции меню</h3>
+        <PageTitle>Добавление позиции меню</PageTitle>
+    }
+    <DataAnnotationsValidator />
+    <div class="form-group row">
+
+        <label for="positionName" class="col-sm-2 col-form-label">
+            Наименование
+        </label>
+        <InputText id="positionName" @bind-Value="@menuPosition.Name" class="form-control"></InputText>
+        <ValidationMessage For="@(() => menuPosition.Name)" />
+        <br />
+
+        <label for="positionPrice" class="col-sm-2 col-form-label">
+            Цена
+        </label>
+        <InputNumber id="sectionNameRu" @bind-Value="@menuPosition.Price" class="form-control"></InputNumber>
+        <ValidationMessage For="@(() => menuPosition.Price)" />
+        <br />
+
+        <label for="positionType" class="col-sm-2 col-form-label">
+            Тип позиции
+        </label>
+        <InputSelect id="positionType" @bind-Value="@menuPosition.PositionTypeId" class="form-control">
+            @foreach (var positionType in positionTypes)
+            {
+                <option value="@positionType.Id">@positionType.NameRu</option>
+            }
+        </InputSelect>
+        <br />
+
+        <label for="positionDescription" class="col-sm-2 col-form-label">
+            Описание
+        </label>
+        <InputText id="positionDescription" @bind-Value="@menuPosition.Decription" class="form-control"></InputText>
+        <ValidationMessage For="@(() => menuPosition.Price)" />
+        <br />
+
+        <label for="positionImage" class="col-sm-2 col-form-label">
+            Фотография
+        </label>
+        <InputFile OnChange="HandleFileSelection"></InputFile>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-custom">Сохранить</button>
+        <button class="btn-google custom-btn-google" @onclick="ReturnToManagement">Назад</button>
+    </div>
+</EditForm>
+
+
+
+@code {
+    private IBrowserFile selectedImage;    
+
+    private void HandleFileSelection(InputFileChangeEventArgs e)
+    {
+        selectedImage = e.GetMultipleFiles().FirstOrDefault();
+    }
+
+    [Parameter]
+    public int menuPositionId { get; set; }
+
+    private MenuPosition menuPosition = new();
+    protected List<PositionType> positionTypes = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        navbarView.Hide();
+        await GetPositionTypesList();
+        if (menuPositionId != 0)
+        {
+            menuPosition = await _httpClient.GetFromJsonAsync<MenuPosition>("api/menu/getbyid/" + menuPositionId);
+        }
+    }
+
+    protected async Task GetPositionTypesList()
+    {
+        positionTypes = await _httpClient.GetFromJsonAsync<List<PositionType>>("api/positionTypes");
+    }
+
+    protected void ReturnToManagement()
+    {
+        _navManager.NavigateTo("/management/menu");
+    }
+
+    protected async Task SaveMenuPosition()
+    {
+        if (selectedImage != null)
+        {
+            var formData = new MultipartFormDataContent();
+            formData.Add(
+                new StreamContent(
+                    selectedImage.OpenReadStream()),
+                    "file",
+                    selectedImage.Name);
+
+            var resp = await _httpClient.PostAsync("api/image", formData);
+
+            if (resp.IsSuccessStatusCode)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+
+        if (menuPosition.Id != 0)
+        {
+            await _httpClient.PutAsJsonAsync(
+                "api/user/update/" + menuPositionId,
+                menuPosition);
+        }
+        else
+        {
+            if (menuPosition.PositionTypeId == 0)
+            {
+                menuPosition.PositionTypeId = 1;
+            }
+            await _httpClient.PostAsJsonAsync("api/Menu/create", menuPosition);
+        }
+    }
+}

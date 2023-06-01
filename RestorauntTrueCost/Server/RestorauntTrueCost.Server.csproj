@@ -35,5 +35,9 @@
     <ProjectReference Include="..\Shared\RestorauntTrueCost.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Samples\" />
+  </ItemGroup>
+
 
 </Project>

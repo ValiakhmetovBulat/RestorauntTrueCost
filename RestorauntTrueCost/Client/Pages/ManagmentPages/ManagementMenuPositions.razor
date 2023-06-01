@@ -1,5 +1,157 @@
-﻿<h3>ManagementMenuPositions</h3>
+﻿@page "/management/menu"
+@using RestorauntTrueCost.Shared.Entities
+@inject HttpClient _httpClient
+@inject IMenuViewModel MenuViewModel
+@using Microsoft.AspNetCore.Authorization;
+@inject ViewNavbarService navbarView
+@attribute [Authorize(Roles = "Admin")]
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+
+<PageTitle>Меню ресторана</PageTitle>
+
+
+@if (MenuViewModel.MenuSections == null)
+{
+    <h1>Загрузка ...</h1>
+}
+else
+{
+    <div class="management-container">
+        <div class="nav-management">
+            <a class="management-title" href="/management/orders/incoming">Ближайшие заказы</a>
+            <a class="management-title" href="/management/orders/archive">Архив заказов</a>
+            <a class="management-title" href="/management/users">Пользователи</a>
+            <a class="management-title active-management-title">Позиции меню</a>
+        </div>
+    </div>
+    <div class="info-container">        
+        <div class="menu">
+            <ul class="menu-section-container">
+                @foreach (var s in MenuViewModel.MenuSections)
+                {
+                    <li>
+                        <button class="btn-delete" @onclick="() => DeleteSection(s)">x</button>
+                        <button class="btn-edit"><span class="oi oi-pencil"></span></button>
+                        <a class="@ChangeSectionCssStyle(s)" @onclick="() => MenuViewModel.ChangeSection(s)">
+
+                            @s.NameRU.ToUpper()
+                        </a>
+                    </li>
+                }
+                <li>
+                    <a class="btn btn-custom" href="/management/menu/sections/add">Добавить секцию меню</a>
+                </li>
+            </ul>
+            <div class="menu-field">
+                <ul class="menu-type-container">
+                    @foreach (var t in MenuViewModel.MenuPositionTypes)
+                    {
+                        if (t.SectionId == MenuViewModel.SelectedSection.Id)
+                        {
+                            <li>
+                                <button class="btn-delete" @onclick="() => DeletePositionType(t)">x</button>
+                                <button class="btn-edit"><span class="oi oi-pencil"></span></button>
+                                <a class="@ChangeTypeCssStyle(t)" @onclick="() => MenuViewModel.ChangeTypes(t)">
+                                    @t.NameRu
+                                </a>
+                            </li>
+                        }
+                    }
+                    <li>
+                        <a class="btn btn-custom" href="/management/menu/positiontypes/add">Добавить тип секции меню</a>
+                    </li>
+                </ul>
+                <div class="card-container">
+                    <div class="card-pos">
+                        <button class="btn btn-custom">Добавить позицию меню</button>
+                    </div>
+                    @foreach (var m in MenuViewModel.MenuPositions)
+                    {
+                        @if (MenuViewModel.SelectedType != null)
+                        {
+                            if (m.PositionTypeId == MenuViewModel.SelectedType.Id)
+                            {
+                                <div class="card-pos">
+                                    @if (m.Photo != null)
+                                    {
+                                        <img src="/images/positions/@m.Photo" class="img-pos" alt="@m.Name" />
+                                    }
+                                    <h1>@m.Name</h1>
+                                    <span class="position-description">@m.Decription</span>
+                                    <div class="position-price">@m.Price руб.</div>                                    
+
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
 
 @code {
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        navbarView.Hide();
+        var authState = await authenticationState;
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            MenuViewModel.Cart = await MenuViewModel.GetCart();
+        }
+        await GetMenu();
+    }
+
+    private async Task GetMenu()
+    {
+        MenuViewModel.MenuSections = await MenuViewModel.GetMenuPositionSections();
+        MenuViewModel.MenuPositions = await MenuViewModel.GetMenuPositions();
+        MenuViewModel.MenuPositionTypes = await MenuViewModel.GetMenuPositionTypes();
+    }
+
+    private string ChangeSectionCssStyle(Section section)
+    {
+        return MenuViewModel.SelectedSection.Id == section.Id ? "active-section" : "menu-section";
+    }
+
+    private string ChangeTypeCssStyle(PositionType type)
+    {
+        return MenuViewModel.SelectedType.Id == type.Id ? "active-type" : "menu-type";
+    }
+
+    private async Task DeleteSection(Section section)
+    {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>(
+            "confirm",
+            $"Вы действительно хотите удалить секцию: |{section.Id}| {section.Name} {section.NameRU}?");
+
+        if (confirmed)
+        {
+            var result = await Http.DeleteFromJsonAsync<User>($"api/section/delete/{section.Id}");
+            await GetMenu();
+        }
+    }
+
+    private async Task DeletePositionType(PositionType positionType)
+    {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>(
+            "confirm",
+            $"Вы действительно хотите удалить тип секции: |{positionType.Id}| {positionType.Name} {positionType.NameRu}?");
+
+        if (confirmed)
+        {
+            var result = await Http.DeleteFromJsonAsync<User>($"api/positionTypes/delete/{positionType.Id}");
+            await GetMenu();
+        }
+    }
 }

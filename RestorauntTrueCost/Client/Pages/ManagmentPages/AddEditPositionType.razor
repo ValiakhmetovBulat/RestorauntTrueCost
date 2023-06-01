@@ -1,0 +1,96 @@
+﻿@page "/management/menu/positiontypes/add"
+@page "/management/menu/positiontypes/edit/{positionTypeId:int}"
+@inject HttpClient _httpClient
+@inject NavigationManager _navManager
+@using Microsoft.AspNetCore.Authorization;
+@inject ViewNavbarService navbarView
+@attribute [Authorize(Roles = "Admin")]
+
+
+    <EditForm Model="@menuPositionType" OnValidSubmit="() => SavePositionType()" class="management-container">
+        @if (positionTypeId != 0)
+        {
+            <h3>Редактирование типа секции @positionTypeId</h3>
+            <PageTitle>Редактирование типа секции @positionTypeId</PageTitle>
+        }
+        else
+        {
+            <h3>Добавление типа секции меню</h3>
+            <PageTitle>Добавление типа секции меню</PageTitle>
+        }
+        <DataAnnotationsValidator />
+        <div class="form-group row">
+            <label for="sectionName" class="col-sm-2 col-form-label">
+                Название на английском
+            </label>
+            <InputText id="sectionName" @bind-Value="@menuPositionType.Name" class="form-control"></InputText>
+            <ValidationMessage For="@(() => menuPositionType.Name)" />
+            <br />
+            <label for="sectionNameRu" class="col-sm-2 col-form-label">
+                Название на русском
+            </label>
+            <InputText id="sectionNameRu" @bind-Value="@menuPositionType.NameRu" class="form-control"></InputText>
+            <br />
+            <label for="positionSection" class="col-sm-2 col-form-label">
+                Секция
+            </label>
+            <InputSelect id="positionSection" @bind-Value="@menuPositionType.SectionId" class="form-control">
+                @foreach (var menuSection in menuSections)
+                {
+                    <option value="@menuSection.Id">@menuSection.NameRU</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-custom">Сохранить</button>
+            <button class="btn-google custom-btn-google" @onclick="ReturnToManagement">Назад</button>
+        </div>
+    </EditForm>
+
+
+
+@code {
+    [Parameter]
+    public int positionTypeId { get; set; }
+
+    private PositionType menuPositionType = new();
+    protected List<Section> menuSections = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        navbarView.Hide();
+        await GetSectionsList();
+        if (positionTypeId != 0)
+        {
+            menuPositionType = await _httpClient.GetFromJsonAsync<PositionType>("api/positionTypes/getbyid/" + positionTypeId);
+        }
+    }
+
+    protected async Task GetSectionsList()
+    {
+        menuSections = await _httpClient.GetFromJsonAsync<List<Section>>("api/section");
+    }
+
+    protected void ReturnToManagement()
+    {
+        _navManager.NavigateTo("/management/menu");
+    }
+
+    protected async Task SavePositionType()
+    {
+        if (menuPositionType.Id != 0)
+        {
+            await _httpClient.PutAsJsonAsync(
+                "api/user/update/" + positionTypeId,
+                menuPositionType);
+        }
+        else
+        {
+            if (menuPositionType.SectionId == null || menuPositionType.SectionId == 0)
+            {
+                menuPositionType.SectionId = 1;
+            }
+            await _httpClient.PostAsJsonAsync("api/PositionTypes/create", menuPositionType);
+        }
+    }
+}

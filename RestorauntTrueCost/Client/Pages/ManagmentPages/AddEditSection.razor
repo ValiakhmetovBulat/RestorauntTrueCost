@@ -1,0 +1,80 @@
+﻿@page "/management/menu/sections/add"
+@page "/management/menu/sections/edit/{sectionId:int}"
+@inject HttpClient _httpClient
+@inject NavigationManager _navManager
+@using Microsoft.AspNetCore.Authorization;
+@inject ViewNavbarService navbarView
+@attribute [Authorize(Roles = "Admin")]
+
+@if (sectionId == 0)
+{
+    <EditForm Model="@menuSection" OnValidSubmit="() => SaveSection()" class="management-container">
+        @if (sectionId != 0)
+        {
+            <h3>Редактирование секции @sectionId</h3>
+            <PageTitle>Редактирование секции @sectionId</PageTitle>
+        }
+        else
+        {
+            <h3>Добавление секции меню</h3>
+            <PageTitle>Добавление секции меню</PageTitle>
+        }
+        <DataAnnotationsValidator />
+        <div class="form-group row">
+            <label for="sectionName" class="col-sm-2 col-form-label">
+                Название на английском
+            </label>
+            <InputText id="sectionName" @bind-Value="@menuSection.Name" class="form-control"></InputText>
+            <ValidationMessage For="@(() => menuSection.Name)" />
+            <br />
+            <label for="sectionNameRu" class="col-sm-2 col-form-label">
+                Название на русском
+            </label>
+            <InputText id="sectionNameRu" @bind-Value="@menuSection.NameRU" class="form-control"></InputText>
+            <br />            
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-custom">Сохранить</button>
+            <button class="btn-google custom-btn-google" @onclick="ReturnToManagement">Назад</button>
+        </div>
+    </EditForm>
+}
+else
+{
+    
+}
+
+@code {
+    [Parameter]
+    public int sectionId { get; set; }
+
+    private Section menuSection { get; set; } = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        navbarView.Hide();
+        if (sectionId != 0)
+        {
+            menuSection = await _httpClient.GetFromJsonAsync<Section>("api/section/getbyid/" + sectionId);
+        }
+    }
+
+    protected void ReturnToManagement()
+    {
+        _navManager.NavigateTo("/management/menu");
+    }
+
+    protected async Task SaveSection()
+    {
+        if (menuSection.Id != 0)
+        {
+            await _httpClient.PutAsJsonAsync(
+                "api/user/update/" + sectionId,
+                menuSection);
+        }
+        else
+        {
+            await _httpClient.PostAsJsonAsync("api/section/create", menuSection);
+        }
+    }
+}
