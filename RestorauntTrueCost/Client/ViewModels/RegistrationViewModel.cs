@@ -12,7 +12,6 @@ namespace RestorauntTrueCost.Client.ViewModels
         [Required(ErrorMessage = "Поле не может быть пустым")]
         public string Email { get; set; } = null!;
         [MinLength(6, ErrorMessage = "Минимальная длина пароля - 6 символов")]
-        [MaxLength(20, ErrorMessage = "Максимальная длина пароля - 20 символов")]
         [HasDigits(1, ErrorMessage = "Пароль должен содержать хотя бы одну цифру")]
         [HasLetters(1, ErrorMessage = "Пароль должен содержать хотя бы одну букву")]
         [HasUpper(1, ErrorMessage = "Пароль должен содержать хотя бы одну букву верхнего регистра")]
