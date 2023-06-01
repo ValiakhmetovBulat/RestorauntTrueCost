@@ -2,7 +2,6 @@
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize(Roles = "Admin")]
 @using RestorauntTrueCost.Shared.Entities
-@inject IOrderManagementViewModel _orderManagment
 @inject HttpClient Http
 @inject ViewNavbarService ViewNavBar
 @inject IJSRuntime jsRuntime
@@ -11,9 +10,10 @@
     <div class="management-container">
 
         <div class="nav-management">
-            <a class="management-title" href="/ordermanagement/incoming">Ближайшие заказы</a>
-            <a class="management-title" href="/ordermanagement/archive">Архив заказов</a>
+            <a class="management-title" href="/management/orders/incoming">Ближайшие заказы</a>
+            <a class="management-title" href="/management/orders/archive">Архив заказов</a>
             <a class="management-title active-management-title">Пользователи</a>
+            <a class="management-title" href="/management/menu">Позиции меню</a>
         </div>
 
         <br />
