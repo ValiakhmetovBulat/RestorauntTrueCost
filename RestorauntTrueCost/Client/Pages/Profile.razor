@@ -10,15 +10,27 @@
     <div class="black-splitter"></div>
     <div class="col-6">
         <EditForm Model="_profile" OnValidSubmit="@_profile.UpdateProfile">
-            <DataAnnotationsValidator />
-            <InputText class="form-control" placeholder="Имя" @bind-Value="_profile.Name" />
+            <DataAnnotationsValidator />            
+            <label for="profile-name" class="col-form-label">
+                Имя:
+            </label>
+            <InputText id="profile-name" class="form-control" placeholder="Имя" @bind-Value="_profile.Name" />
             <br />
-            <InputText class="form-control" placeholder="Фамилия" @bind-Value="_profile.Surname" />
+            <label for="profile-surname" class="col-form-label">
+                Фамилия:
+            </label>
+            <InputText id="profile-surname" class="form-control" placeholder="Фамилия" @bind-Value="_profile.Surname" />
             <br />
-            <InputText class="form-control" placeholder="Email" @bind-Value="_profile.Email" />
+            <label for="profile-email" class="col-form-label">
+                Email:
+            </label>
+            <InputText id="profile-email" class="form-control" placeholder="Email" @bind-Value="_profile.Email" />
             <ValidationMessage For="@(() => _profile.Email)" />
             <br />
-            <InputText class="form-control" placeholder="Номер телефона" @bind-Value="_profile.Phone" />
+            <label for="profile-phone" class="col-form-label">
+                Номер телефона:
+            </label>
+            <InputText id="profile-phone" class="form-control" placeholder="Номер телефона" @bind-Value="_profile.Phone" />
             <ValidationMessage For="@(() => _profile.Phone)" />
             <br />
             <button class="btn btn-custom" type="submit">Обновить профиль</button>

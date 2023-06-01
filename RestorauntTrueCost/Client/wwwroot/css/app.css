@@ -201,11 +201,12 @@ a, .btn-link {
 .management-title {
     color: gray;
     margin: 0 20px;
+    text-decoration: underline;
 }
 
 .active-management-title {
     color: black;
-    text-decoration: 2px underline red;
+    text-decoration: 2px underline red !important;
 }
 
 .nav-management {
