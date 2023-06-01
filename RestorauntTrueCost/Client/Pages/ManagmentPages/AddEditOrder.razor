@@ -1,4 +1,4 @@
-﻿@page "/ordermanagement/edit/{orderId:int}"
+﻿@page "/management/orders/edit/{orderId:int}"
 @inject HttpClient _httpClient
 @inject NavigationManager _navManager
 @using Microsoft.AspNetCore.Authorization;
@@ -60,7 +60,7 @@
 
     protected void ReturnToManagement()
     {
-        _navManager.NavigateTo("/ordermanagement/incoming");
+        _navManager.NavigateTo("/management/orders/incoming");
     }
 
     protected async Task SaveOrder()

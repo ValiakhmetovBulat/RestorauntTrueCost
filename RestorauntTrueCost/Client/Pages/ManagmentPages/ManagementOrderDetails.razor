@@ -1,4 +1,4 @@
-﻿@page "/ordermanagement/details/{orderId:int}"
+﻿@page "/management/orders/details/{orderId:int}"
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize(Roles = "Manager,Admin")]
 @using RestorauntTrueCost.Shared.Entities
@@ -91,6 +91,6 @@
 
     protected void ReturnToManagement()
     {
-        _navManager.NavigateTo("/ordermanagement/incoming");
+        _navManager.NavigateTo("/management/orders/incoming");
     }
 }

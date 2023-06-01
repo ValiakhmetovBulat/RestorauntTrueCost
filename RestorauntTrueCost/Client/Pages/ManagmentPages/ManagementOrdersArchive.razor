@@ -1,8 +1,7 @@
-﻿@page "/ordermanagement/archive"
+﻿@page "/management/orders/archive"
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize(Roles = "Manager,Admin")]
 @using RestorauntTrueCost.Shared.Entities
-@inject IOrderManagementViewModel _orderManagment
 @inject HttpClient Http
 @inject ViewNavbarService ViewNavBar
 
@@ -10,12 +9,13 @@
     <div class="management-container">
 
         <div class="nav-management">
-            <a class="management-title" href="/ordermanagement/incoming">Ближайшие заказы</a>
+            <a class="management-title" href="/management/orders/incoming">Ближайшие заказы</a>
             <a class="management-title active-management-title">Архив заказов</a>         
             @if (userRole == "Admin")
             {
                 <a class="management-title" href="/management/users">Пользователи</a>
-            }            
+                <a class="management-title" href="/management/menu">Позиции меню</a>
+            }
         </div>
 
         <br />
