@@ -82,8 +82,16 @@ namespace RestorauntTrueCost.Server.Controllers
                 {
                     var foundCartPositions = await _db.Find(c => c.UserId == id && c.MenuPositionId == positionId);
 
-                    _db.RemoveRange(foundCartPositions);
-                    return Ok(foundCartPositions);
+                    if (foundCartPositions != null)
+                    {
+                        await _db.RemoveRange(foundCartPositions);
+                        return Ok(foundCartPositions);
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }                      
+                    
                 }
                 else
                 {

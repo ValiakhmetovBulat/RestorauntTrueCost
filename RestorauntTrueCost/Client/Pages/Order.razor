@@ -92,7 +92,7 @@
 
 @code {
     private bool isAuthError => string.IsNullOrWhiteSpace(_order.Message) ? false : true;
-    private string MaxDate { get; } = DateTime.Now.AddMonths(3).ToString("s").Split('T')[0];
+    private string MaxDate { get; } = DateTime.Now.AddMonths(1).ToString("s").Split('T')[0];
     private string MinDate { get; } = DateTime.UtcNow.ToString("s").Split('T')[0];
 
     protected override async Task OnInitializedAsync()
