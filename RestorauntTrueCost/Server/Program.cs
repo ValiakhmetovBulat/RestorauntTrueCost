@@ -10,8 +10,6 @@ using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Server.Models.Repositories.EntitiesRepositories;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using RestorauntApi.Models.EntititesRepositories.Entities;
-using RestorauntApi.Models.EntititesRepositories.Interfaces;
 using RestorauntTrueCost.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;

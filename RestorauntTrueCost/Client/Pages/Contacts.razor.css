@@ -1,0 +1,55 @@
+﻿.btn-social-telegram {
+    background: #0088CC;
+}
+
+    .btn-social-telegram:hover {
+        background: #0279b5;
+        transition: background 0.3s ease;
+    }
+
+.btn-social-vk {
+    background: #4376A6;
+    transition: background 0.5s ease;
+}
+
+    .btn-social-vk:hover {
+        background: #1A4B78;
+    }
+
+.btn-social-instagram {
+    background: #f09433;
+    background: -moz-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    background: -webkit-linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+    background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+    transition: background 0.5s ease;
+}
+
+    .btn-social-instagram:hover {
+        background: linear-gradient(45deg, #d29433 0%,#c8683c 25%,#be2743 50%,#b42366 75%,#9e1888 100%);
+    }
+
+.btn-social-vk, .btn-social-instagram, .btn-social-telegram {
+    border-radius: 5px;
+    width: 50%;
+    height: 5%;
+    display: flex;
+    margin: 10px;
+    padding: 10px;
+}
+
+.social-buttons-container {
+    display: flex;
+    width: 80%;
+    align-items: center;
+    flex-direction: column;    
+}
+
+.fa {
+    margin: 10px;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+    width: 100%;
+}

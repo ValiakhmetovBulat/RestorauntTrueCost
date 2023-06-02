@@ -139,9 +139,8 @@ a, .btn-link {
 }
 
 .main-img-div {
+    display: flex;
     margin: 15px 0 0 0;
-    width: 50%;
-    height: 500px;
 }
 
 .about-img {

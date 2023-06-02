@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RestorauntApi.Models.EntititesRepositories.Interfaces;
+using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Shared.Entities;
 using System.Data;
 
 namespace RestorauntTrueCost.Server.Controllers
-{    
+{
     [ApiController]
     [Route("api/[controller]")]
     public class SectionController : ControllerBase

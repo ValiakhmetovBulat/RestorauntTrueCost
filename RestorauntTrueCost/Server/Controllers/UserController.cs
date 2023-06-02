@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using RestorauntApi.Models.EntititesRepositories.Interfaces;
 using RestorauntTrueCost.Client.ViewModels;
 using RestorauntTrueCost.Server.Models;
+using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Shared.Entities;
 using RestorauntTrueCost.Shared.Models;
 using System;
@@ -72,9 +72,22 @@ namespace RestorauntTrueCost.Server.Controllers
             {
                 return BadRequest("Данная почта уже зарегестрирована в системе");
             }
-
-            await _db.Create(user);
-            return Ok(user);
+            
+            if (user.RoleId == 0)
+            {
+                return BadRequest("Некорретная роль пользователя");
+            }
+            try
+            {
+                user.Password = Encryption.Encrypt(user.Password);
+                await _db.Create(user);
+                return Ok(user);
+            }
+            catch (Exception)
+            {
+                return BadRequest("При выполнении запроса произошла ошибка. Возможно указанной роли не сущестует");
+            }
+            
         }
 
         [HttpPost("login")]
@@ -122,12 +135,31 @@ namespace RestorauntTrueCost.Server.Controllers
             if (foundUser != null)
             {
                 foundUser.Surname = user.Surname;
-                foundUser.Email = user.Email;
+                if (!string.IsNullOrWhiteSpace(user.Email))
+                {
+                    var userWithEmail = _db.Find(u => u.Email == user.Email).Result.FirstOrDefault();
+                    if (userWithEmail != null && foundUser.Email != user.Email)
+                    {
+                        return BadRequest("Данная почта уже зарегестрирована в системе");
+                    }                    
+                    foundUser.Email = user.Email;                                                
+                }                
                 foundUser.Name = user.Name;
                 foundUser.Phone = user.Phone;
-                foundUser.RoleId = user.RoleId;
-                await _db.Update(foundUser);
-                return Ok(foundUser);
+                if (user.RoleId != 0)
+                {
+                    foundUser.RoleId = user.RoleId;
+                }
+                try
+                {
+                    await _db.Update(foundUser);
+                    return Ok(foundUser);
+                }   
+                catch (Exception)
+                {
+                    return BadRequest("Произошла ошибка при выполнении запроса.");
+                }
+                
             }
             return BadRequest("User not found");
         }

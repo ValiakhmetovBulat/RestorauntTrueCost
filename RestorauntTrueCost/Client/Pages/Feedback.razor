@@ -21,23 +21,35 @@
 
             <EditForm Model="_feedback" class="feedback" OnValidSubmit="_feedback.SendFeedback">
                 <DataAnnotationsValidator />
-                <input type="hidden" name="id" value="0" />
+                <input type="hidden" name="id" value="0" />               
                 <div class="form-group col-6">
-                    <input class="form-control" type="date" @bind-value="_feedback.DateOfVisit" min="@MinDate" max="@MaxDate" />
+                <label for="visited-date" class="col-form-label">
+                        Дата посещения:
+                    </label>
+                    <input id="visited-date" class="form-control" type="date" @bind-value="_feedback.DateOfVisit" min="@MinDate" max="@MaxDate" />
                 </div>
                 <br />
                 <div class="form-group col-6">
-                    <InputNumber class="form-control" @bind-Value="_feedback.NumberOfGuests" placeholder="Количество гостей" />
+                <label for="guest-num" class="col-form-label">
+                    Количество гостей:
+                </label>
+                <InputNumber id="guest-num" class="form-control" @bind-Value="_feedback.NumberOfGuests" placeholder="Количество гостей" />
                     <ValidationMessage For="@(() => _feedback.NumberOfGuests)" />
                 </div>
                 <br />
                 <div class="form-group col-6">
-                    <InputNumber class="form-control" @bind-Value="_feedback.TableNumber" placeholder="Номер стола" />
+                <label for="table-num" class="col-form-label">
+                    Номер стола:
+                </label>
+                <InputNumber id="table-num" class="form-control" @bind-Value="_feedback.TableNumber" placeholder="Номер стола" />
                     <ValidationMessage For="@(() => _feedback.TableNumber)" />
                 </div>
                 <br />
                 <div class="form-group col-6">
-                    <InputTextArea type="text" class="form-control tb-comment" placeholder="Комментарий" @bind-Value="_feedback.Message" />
+                <label for="comment" class="col-form-label">
+                    Комментарий:
+                </label>
+                    <InputTextArea style="height:200px" id="comment" type="text" class="form-control tb-comment" placeholder="Комментарий" @bind-Value="_feedback.Message" />
                     <ValidationMessage For="@(() => _feedback.Message)" />
                 </div>
                 <br />

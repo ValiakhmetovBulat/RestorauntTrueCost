@@ -18,6 +18,9 @@
             <h3>Добавление типа секции меню</h3>
             <PageTitle>Добавление типа секции меню</PageTitle>
         }
+        <Message IsShown="IsShown" IsSuccess="IsSuccess" MessageText="@Message">
+
+        </Message>
         <DataAnnotationsValidator />
         <div class="form-group row">
             <label for="sectionName" class="col-sm-2 col-form-label">
@@ -56,6 +59,10 @@
     private PositionType menuPositionType = new();
     protected List<Section> menuSections = new();
 
+    private string Message { get; set; }
+    private bool IsShown { get; set; } = false;
+    private bool IsSuccess { get; set; } = false;
+
     protected override async Task OnParametersSetAsync()
     {
         navbarView.Hide();
@@ -63,12 +70,26 @@
         if (positionTypeId != 0)
         {
             menuPositionType = await _httpClient.GetFromJsonAsync<PositionType>("api/positionTypes/getbyid/" + positionTypeId);
+
+            if (menuPositionType == null)
+            {
+                Message = "Ошибка при загрузке типа секции";
+                IsShown = true;
+                IsSuccess = false;
+            }
         }
     }
 
     protected async Task GetSectionsList()
     {
         menuSections = await _httpClient.GetFromJsonAsync<List<Section>>("api/section");
+
+        if (menuSections == null)
+        {
+            Message = "Ошибка при загрузке секций";
+            IsShown = true;
+            IsSuccess = false;
+        }
     }
 
     protected void ReturnToManagement()
@@ -90,7 +111,20 @@
             {
                 menuPositionType.SectionId = 1;
             }
-            await _httpClient.PostAsJsonAsync("api/PositionTypes/create", menuPositionType);
+            var resp = await _httpClient.PostAsJsonAsync("api/PositionTypes/create", menuPositionType);
+
+            if (resp.IsSuccessStatusCode)
+            {               
+                Message = "Успешно!";
+                IsShown = true;
+                IsSuccess = true;            
+            }
+            else
+            {
+                Message = await resp.Content.ReadAsStringAsync();
+                IsShown = true;
+                IsSuccess = false;
+            }
         }
     }
 }

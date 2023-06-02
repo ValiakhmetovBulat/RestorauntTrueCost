@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RestorauntApi.Models.EntititesRepositories.Interfaces;
+using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Shared.Entities;
 
 namespace RestorauntTrueCost.Server.Controllers

@@ -1,7 +1,7 @@
 ﻿using RestorauntTrueCost.Server.Models.Repositories;
 using RestorauntTrueCost.Shared.Entities;
 
-namespace RestorauntApi.Models.EntititesRepositories.Interfaces
+namespace RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces
 {
     public interface IOrderPeriodRepository : IRepository<OrderPeriod>
     {
