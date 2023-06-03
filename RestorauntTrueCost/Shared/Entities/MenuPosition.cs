@@ -12,5 +12,5 @@ public partial class MenuPosition
     public int PositionTypeId { get; set; }
     public virtual PositionType PositionType { get; set; } = null!;
     public string? Decription { get; set; }
-    public string? Photo { get; set; }    
+    public string? Photo { get; set; }
 }
