@@ -59,7 +59,7 @@ else
                         }
                     }
                     <li>
-                        <a class="btn btn-custom" href="/management/menu/positiontypes/add">Добавить тип секции меню</a>
+                        <a class="btn btn-custom" href="/management/menu/positiontypes/add/{@MenuViewModel.SelectedSection.Id}">Добавить тип секции меню</a>
                     </li>
                 </ul>
                 <div class="card-container">
@@ -96,19 +96,10 @@ else
 
 
 @code {
-    [CascadingParameter]
-    public Task<AuthenticationState> authenticationState { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         navbarView.Hide();
-        var authState = await authenticationState;
-        var user = authState.User;
-
-        if (user.Identity.IsAuthenticated)
-        {
-            MenuViewModel.Cart = await MenuViewModel.GetCart();
-        }
         await GetMenu();
     }
 

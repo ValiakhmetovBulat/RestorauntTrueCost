@@ -1,5 +1,6 @@
 ﻿@page "/management/menu/positiontypes/add"
 @page "/management/menu/positiontypes/edit/{positionTypeId:int}"
+@page "/management/menu/positiontypes/add/{sectionId:int}"
 @inject HttpClient _httpClient
 @inject NavigationManager _navManager
 @using Microsoft.AspNetCore.Authorization;
@@ -55,6 +56,8 @@
 @code {
     [Parameter]
     public int positionTypeId { get; set; }
+    [Parameter]
+    public int sectionId { get; set; }
 
     private PositionType menuPositionType = new();
     protected List<Section> menuSections = new();
@@ -77,6 +80,10 @@
                 IsShown = true;
                 IsSuccess = false;
             }
+        }
+        if (positionTypeId == 0 && sectionId != 0)
+        {
+            menuPositionType.SectionId = sectionId;
         }
     }
 
