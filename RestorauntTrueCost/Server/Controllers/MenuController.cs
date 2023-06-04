@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Shared.Entities;
 using RestorauntTrueCost.Shared.Models;
 using System.Data;
+using System.Net;
 
 namespace RestorauntTrueCost.Server.Controllers
 {
@@ -31,25 +33,35 @@ namespace RestorauntTrueCost.Server.Controllers
         public async Task<ActionResult<MenuPosition>> CreateMenuPosition([FromBody] MenuPositionDto model)
         {
             var menuPosition = model.menuPosition;
-            var image = model.formFile;
+            var files = model.files;
 
-            if (image != null)
+            if (files != null)
             {
-                var rootPath = _env.WebRootPath;
-                var contentPath = _env.ContentRootPath;
-
-                var totalPath = Path.Combine(rootPath, "images", "positions");
-
-                Directory.CreateDirectory(totalPath);
-
-                var fileName = Path.GetRandomFileName();
-
-                using (FileStream stream = new FileStream(Path.Combine(totalPath, fileName), FileMode.Create))
+                if (files.Count() > 0)
                 {
-                    await image.OpenReadStream().CopyToAsync(stream);
-                    menuPosition.Photo = fileName;
+                    
+                    foreach (var file in files)
+                    {
+                        string trustedFileName;
+                        var fileName = file.FileName;
+                        try
+                        {
+                            trustedFileName = Path.GetRandomFileName();
+
+                            var path = Path.Combine(_env.ContentRootPath,
+                                _env.EnvironmentName, "uploads",
+                                trustedFileName);
+
+                            await using FileStream fs = new(path, FileMode.Create);
+                            await file.CopyToAsync(fs);
+                        }
+                        catch (Exception)
+                        {
+                            return BadRequest("bad file");
+                        }
+                    }
                 }
-            }           
+            }         
 
             if (_db.Find(u => u.Name == menuPosition.Name).Result.FirstOrDefault() != null)
             {
@@ -75,6 +87,68 @@ namespace RestorauntTrueCost.Server.Controllers
             }
 
             return NotFound();
+        }
+
+        [HttpPost("filesave")]
+        public async Task<ActionResult<IList<UploadResult>>> PostFile(
+        [FromForm] IEnumerable<IFormFile> files)
+        {
+            var maxAllowedFiles = 3;
+            long maxFileSize = 1024 * 15 * 1024;
+            var filesProcessed = 0;
+            var resourcePath = new Uri($"{Request.Scheme}://{Request.Host}/");
+            List<UploadResult> uploadResults = new();
+
+            foreach (var file in files)
+            {
+                var uploadResult = new UploadResult();
+                string trustedFileNameForFileStorage;
+                var untrustedFileName = file.FileName;
+                uploadResult.FileName = untrustedFileName;
+                var trustedFileNameForDisplay =
+                    WebUtility.HtmlEncode(untrustedFileName);
+
+                if (filesProcessed < maxAllowedFiles)
+                {
+                    if (file.Length == 0)
+                    {
+                        uploadResult.ErrorCode = 1;
+                    }
+                    else if (file.Length > maxFileSize)
+                    {
+                        uploadResult.ErrorCode = 2;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            trustedFileNameForFileStorage = Path.GetRandomFileName();
+                            var path = Path.Combine(_env.ContentRootPath,
+                                trustedFileNameForFileStorage);
+
+                            await using FileStream fs = new(path, FileMode.Create);
+                            await file.CopyToAsync(fs);
+
+                            uploadResult.Uploaded = true;
+                            uploadResult.StoredFileName = trustedFileNameForFileStorage;
+                        }
+                        catch (IOException ex)
+                        {
+                            uploadResult.ErrorCode = 3;
+                        }
+                    }
+
+                    filesProcessed++;
+                }
+                else
+                {
+                    uploadResult.ErrorCode = 4;
+                }
+
+                uploadResults.Add(uploadResult);
+            }
+
+            return new CreatedResult(resourcePath, uploadResults);
         }
 
         [Authorize(Roles = "Admin")]

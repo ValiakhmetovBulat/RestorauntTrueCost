@@ -102,5 +102,17 @@ namespace RestorauntTrueCost.Client.ViewModels
 
             return sum;
         }
+
+        public void AddTableToOrder (Table table)
+        {
+            if (Tables.Contains(table))
+            {
+                Tables.Remove(table);
+            }
+            else
+            {
+                Tables.Add(table);
+            }
+        }
     }
 }

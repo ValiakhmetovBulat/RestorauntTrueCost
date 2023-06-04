@@ -17,5 +17,6 @@ namespace RestorauntTrueCost.Client.ViewModels.Interfaces
         Task GetCart();
         Task ClearCart();
         void ClearTables();
+        void AddTableToOrder(Table table);
     }
 }
