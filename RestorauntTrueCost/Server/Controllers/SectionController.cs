@@ -57,12 +57,57 @@ namespace RestorauntTrueCost.Server.Controllers
             var section = await _db.GetById(sectionId);
             if (section != null)
             {
-                await _db.Delete(section);
-                return Ok(section);
+                try
+                {
+                    await _db.Delete(section);
+                    return Ok(section);
+                }
+                catch (Exception)
+                {
+                    return BadRequest("Чтобы удалить секцию меню сначала необходимо удалить все типы секции");
+                }                
             }
 
             return NotFound();
         }
 
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("update/{sectionId}")]
+        public async Task<ActionResult<Section>> UpdateSection(int sectionId, [FromBody] Section section)
+        {
+            var foundSection = await _db.GetById(sectionId);
+
+            if (foundSection != null)
+            {
+                var existingSectionWithName = _db.Find(p => p.Name == section.Name).Result.FirstOrDefault();
+
+                if (existingSectionWithName != null && existingSectionWithName.Id != section.Id)
+                {
+                    return BadRequest("Секция с данным именем (английский) уже существует в системе");
+                }
+
+                var existingSectionWithNameRu = _db.Find(p => p.NameRU == section.NameRU).Result.FirstOrDefault();
+                if (existingSectionWithNameRu != null && existingSectionWithNameRu.Id != section.Id)
+                {
+                    return BadRequest("Секция с данным именем (русский) уже существует в системе");
+                }
+
+                foundSection.NameRU = section.NameRU;
+                foundSection.Name = section.Name;
+
+                try
+                {
+                    await _db.Update(foundSection);
+                    return Ok(foundSection);
+                }
+                catch (Exception)
+                {
+                    return BadRequest("Произошла ошибка при выполнении запроса.");
+                }
+
+            }
+            return BadRequest("Секция меню не найдена");
+        }
     }
 }

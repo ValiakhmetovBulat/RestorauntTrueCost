@@ -4,6 +4,7 @@
 @using RestorauntTrueCost.Shared.Entities
 @inject HttpClient Http
 @inject ViewNavbarService ViewNavBar
+@inject IJSRuntime jsRuntime
 
 <AuthorizeView Roles="Manager,Admin">  
     <div class="management-container">
@@ -20,12 +21,7 @@
 
         <br/>
         <div class="row">
-            <div class="col-md-6">
-                <a href='/ordermanagement/add' class="btn btn-primary" role="button">
-                    <i class="fas fa-user-plus"></i>
-                    Добавить заказ
-                </a>
-            </div>
+            
             <div class="input-group col">
                 <InputSelect TValue="int" ValueExpression="@(() => selectedStatusId)" Value="selectedStatusId" ValueChanged="OnStatusChanged" class="form-control">
                     <option value="0">Все заказы</option>
@@ -49,7 +45,7 @@
             </div>
         </div>
         <br />
-        @if (OrderList == null)
+        @if (SearchOrderData == null)
         {
             <p><em>Загрузка...</em></p>
         }
@@ -82,9 +78,9 @@
                             @if (userRole == "Admin")
                             {
                                 <td>
-                                    <a href='/user/delete/@order.Id' class="btn btn-outline-danger" role="button">
+                                    <button @onclick="() => DeleteOrder(order)" class="btn btn-outline-danger" role="button">
                                         Удалить
-                                    </a>
+                                    </button>
                                 </td>
                             }
                             <td>
@@ -139,6 +135,20 @@
         StateHasChanged();
     }
 
+    private async Task DeleteOrder(Order order)
+    {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>(
+            "confirm",
+            $"Вы действительно хотите удалить заказ: |{order.Id}|?");
+
+        if (confirmed)
+        {
+            var result = await Http.DeleteFromJsonAsync<User>($"api/order/delete/{order.Id}");
+            await GetOrder();
+            SortOrders();
+        }
+    }
+
     private void OnStatusChanged(int role)
     {
         selectedStatusId = role;
@@ -163,7 +173,8 @@
 
     protected async Task GetOrder()
     {
-        OrderList = await Http.GetFromJsonAsync<List<Order>>("api/order");          
+        OrderList = await Http.GetFromJsonAsync<List<Order>>("api/order");
+        OrderList = OrderList.Where(o => o.OrderStatus.Id != 4 && o.OrderStatus.Id != 3).ToList();
         SearchOrderData = OrderList;
     }
 
@@ -224,10 +235,6 @@
         return false;
     }
 
-    protected void DeleteConfirm(int orderId)
-    {
-        Order = OrderList.FirstOrDefault(x => x.Id == orderId);
-    }
     public void ResetSearch()
     {
         SearchString = string.Empty;

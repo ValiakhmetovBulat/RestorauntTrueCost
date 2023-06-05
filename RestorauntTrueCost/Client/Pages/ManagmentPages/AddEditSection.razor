@@ -6,8 +6,6 @@
 @inject ViewNavbarService navbarView
 @attribute [Authorize(Roles = "Admin")]
 
-@if (sectionId == 0)
-{
     <EditForm Model="@menuSection" OnValidSubmit="() => SaveSection()" class="management-container">
         @if (sectionId != 0)
         {
@@ -19,6 +17,9 @@
             <h3>Добавление секции меню</h3>
             <PageTitle>Добавление секции меню</PageTitle>
         }
+
+        <Message IsShown="IsShown" IsSuccess="IsSuccess" MessageText="@Message"></Message>
+
         <DataAnnotationsValidator />
         <div class="form-group row">
             <label for="sectionName" class="col-sm-2 col-form-label">
@@ -33,16 +34,11 @@
             <InputText id="sectionNameRu" @bind-Value="@menuSection.NameRU" class="form-control"></InputText>
             <br />            
         </div>
-        <div class="form-group">
+    <div class="form-group management-button-container">
             <button type="submit" class="btn btn-custom">Сохранить</button>
-            <button class="btn-google custom-btn-google" @onclick="ReturnToManagement">Назад</button>
+        <button class="btn btn-custom btn-cancel" @onclick="ReturnToManagement">Назад</button>
         </div>
     </EditForm>
-}
-else
-{
-    
-}
 
 @code {
     [Parameter]
@@ -50,12 +46,23 @@ else
 
     private Section menuSection { get; set; } = new();
 
+    private string Message { get; set; }
+    private bool IsShown { get; set; } = false;
+    private bool IsSuccess { get; set; } = false;
+
     protected override async Task OnParametersSetAsync()
     {
         navbarView.Hide();
         if (sectionId != 0)
         {
             menuSection = await _httpClient.GetFromJsonAsync<Section>("api/section/getbyid/" + sectionId);
+
+            if (menuSection == null)
+            {
+                Message = "Ошибка при загрузке секции";
+                IsShown = true;
+                IsSuccess = false;
+            }
         }
     }
 
@@ -68,13 +75,39 @@ else
     {
         if (menuSection.Id != 0)
         {
-            await _httpClient.PutAsJsonAsync(
-                "api/user/update/" + sectionId,
-                menuSection);
+            var resp = await _httpClient.PutAsJsonAsync(
+               "api/section/update/" + sectionId,
+               menuSection);
+
+            if (resp.IsSuccessStatusCode)
+            {
+                Message = "Успешно!";
+                IsShown = true;
+                IsSuccess = true;
+            }
+            else
+            {
+                Message = await resp.Content.ReadAsStringAsync();
+                IsShown = true;
+                IsSuccess = false;
+            }
         }
         else
         {
-            await _httpClient.PostAsJsonAsync("api/section/create", menuSection);
+            var resp = await _httpClient.PostAsJsonAsync("api/section/create", menuSection);
+
+            if (resp.IsSuccessStatusCode)
+            {
+                Message = "Успешно!";
+                IsShown = true;
+                IsSuccess = true;
+            }
+            else
+            {
+                Message = await resp.Content.ReadAsStringAsync();
+                IsShown = true;
+                IsSuccess = false;
+            }
         }
     }
 }

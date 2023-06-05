@@ -1,4 +1,5 @@
 ﻿@page "/management/menu/positions/add"
+@page "/management/menu/positions/add/{positionTypeId:int}"
 @page "/management/menu/positions/edit/{menuPositionId:int}"
 @inject HttpClient _httpClient
 @inject NavigationManager _navManager
@@ -54,36 +55,60 @@
         </label>
         <InputText id="positionDescription" @bind-Value="@menuPosition.Decription" class="form-control"></InputText>
         <ValidationMessage For="@(() => menuPosition.Price)" />
-        <br />
-
+        <br />    
         <label for="positionImage" class="col-sm-2 col-form-label">
             Фотография
         </label>
-        <InputFile OnChange="@LoadFiles"></InputFile>
-        <Message IsShown="@IsShown" IsSuccess="@IsSucess" MessageText="@Message"></Message>
+        <div class="image-download-container">
+            <InputFile id="positionImage" OnChange="HandleFileSelection" accept=".jpg,.jpeg,.png"></InputFile>
+            @if (!string.IsNullOrEmpty(imageData))
+            {
+                <img src="data:image;base64,@imageData" alt="Ошибка при загрузке изображения" class="position-image-preview" />
+            }
+            else if (menuPositionId != 0)
+            {
+                <img src="/api/menu/getimage/@menuPosition.Id" class="position-image-preview">
+            }
+        </div>        
     </div>
-    <div class="form-group">
+    <div class="form-group management-button-container">
         <button type="submit" class="btn btn-custom">Сохранить</button>
-        <button class="btn-google custom-btn-google" @onclick="ReturnToManagement">Назад</button>
+        <button class="btn btn-custom btn-cancel" @onclick="ReturnToManagement">Назад</button>
     </div>
 </EditForm>
 
 
 
-@code {
-    private bool IsShown { get; set; }
-    private bool IsSucess { get; set; }
-    private string Message { get; set; } = "";
+<Message IsShown="@IsShown" IsSuccess="@IsSuccess" MessageText="@Message"></Message>
 
+
+@code {
     [Parameter]
     public int menuPositionId { get; set; }
+
+    [Parameter]
+    public int positionTypeId { get; set; }
+
+    private bool IsShown { get; set; }
+    private bool IsSuccess { get; set; }
+    private string Message { get; set; } = "";
+
+    private IBrowserFile file;
+    private byte[] imageBuffer;
+    private string imageData;
 
     private MenuPosition menuPosition = new();
     protected List<PositionType> positionTypes = new();
 
-    private async Task LoadFiles(InputFileChangeEventArgs e)
+    private async Task HandleFileSelection(InputFileChangeEventArgs e)
     {
-        
+        file = e.File;
+
+        using var reader = new StreamReader(file.OpenReadStream());
+        var fileBytes = new byte[file.Size];
+        await file.OpenReadStream().ReadAsync(fileBytes);
+
+        imageData = Convert.ToBase64String(fileBytes);
     }
 
     protected override async Task OnParametersSetAsync()
@@ -93,6 +118,17 @@
         if (menuPositionId != 0)
         {
             menuPosition = await _httpClient.GetFromJsonAsync<MenuPosition>("api/menu/getbyid/" + menuPositionId);
+
+            if (menuPosition == null)
+            {
+                Message = "Ошибка при загрузке позиции меню";
+                IsShown = true;
+                IsSuccess = false;
+            }
+        }
+        if (positionTypeId != 0 && menuPositionId == 0)
+        {
+            menuPosition.PositionTypeId = positionTypeId;
         }
     }
 
@@ -108,12 +144,50 @@
 
     protected async Task SaveMenuPosition()
     {
+        Message = "";
+
+        if (file != null)
+        {
+            string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
+
+            string fileExtension = System.IO.Path.GetExtension(file.Name);
+
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                IsShown = true;
+                IsSuccess = false;
+                Message = $"Загрузить можно только файлы с расширениями .jpg, .jpeg или .png. Файлы с расширением {fileExtension} недопустимы";
+                return;
+            }
+            else
+            {
+                imageBuffer = new byte[file.Size];
+                await file.OpenReadStream().ReadAsync(imageBuffer);
+            }
+        }
+
+        var model = new MenuPositionDto
+            {
+                menuPosition = menuPosition,
+                FileData = imageBuffer,
+            };
 
         if (menuPosition.Id != 0)
         {
-            await _httpClient.PutAsJsonAsync(
-                "api/user/update/" + menuPositionId,
-                menuPosition);
+            var resp = await _httpClient.PutAsJsonAsync("api/menu/update/" + menuPositionId, model);
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                Message += await resp.Content.ReadAsStringAsync();
+                IsShown = true;
+                IsSuccess = false;
+            }
+            else
+            {
+                Message = "Успешно!";
+                IsShown = true;
+                IsSuccess = true;
+            }
         }
         else
         {
@@ -121,22 +195,19 @@
             {
                 menuPosition.PositionTypeId = 1;
             }
-            var model = new MenuPositionDto
-            {
-                menuPosition = menuPosition,
-            };
+
             var resp = await _httpClient.PostAsJsonAsync("api/Menu/create", model);
             if (!resp.IsSuccessStatusCode)
             {
                 Message += await resp.Content.ReadAsStringAsync();
                 IsShown = true;
-                IsSucess = false;
+                IsSuccess = false;
             }
             else
             {
                 Message = "Успешно!";
                 IsShown = true;
-                IsSucess = true;
+                IsSuccess = true;
             }
         }
     }

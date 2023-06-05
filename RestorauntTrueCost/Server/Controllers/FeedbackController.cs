@@ -17,6 +17,9 @@ namespace RestorauntTrueCost.Server.Controllers
             _db = db;
         }
 
+        [HttpGet]
+        public async Task<IEnumerable<Review>> Get() => await _db.GetAll();
+
         [Authorize]
         [HttpPost("leavefeedback")]
         public async Task<Review> LeaveFeedback(Review review)

@@ -4,6 +4,7 @@
 @using RestorauntTrueCost.Shared.Entities
 @inject HttpClient Http
 @inject ViewNavbarService ViewNavBar
+@inject IJSRuntime jsRuntime
 
 <AuthorizeView Roles="Manager,Admin">
     <div class="management-container">
@@ -34,7 +35,7 @@
             </div>
         </div>
         <br />
-        @if (OrderList == null)
+        @if (SearchOrderData == null)
         {
             <p><em>Загрузка...</em></p>
         }
@@ -55,7 +56,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var order in OrderList)
+                    @foreach (var order in SearchOrderData)
                     {
 
                         <tr>
@@ -97,6 +98,19 @@
                             </td>
                             <td>@order.User.Email</td>
                             <td>@order.User.Phone</td>
+                            @if (userRole == "Admin")
+                            {
+                                <td>
+                                    <button @onclick="() => DeleteOrder(order)" class="btn btn-outline-danger" role="button">
+                                        Удалить
+                                    </button>
+                                </td>
+                            }
+                            <td>
+                                <a href='/management/orders/edit/@order.Id' class="btn btn-custom" role="button">
+                                    Редактировать
+                                </a>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -126,8 +140,8 @@
     }
     protected async Task GetOrder()
     {
-        OrderList = await Http.GetFromJsonAsync<List<Order>>("api/order");        
-        OrderList = OrderList.OrderBy(o => o.TableOrders.Min(t => t.ReservedDate)).ToList();
+        OrderList = await Http.GetFromJsonAsync<List<Order>>("api/order");
+        OrderList = OrderList.Where(o => o.OrderStatus.Id != 2 && o.OrderStatus.Id != 1).ToList();
         SearchOrderData = OrderList;
     }
 
@@ -147,6 +161,19 @@
     {
         SearchString = string.Empty;
         OrderList = SearchOrderData;
+    }
+
+    private async Task DeleteOrder(Order order)
+    {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>(
+            "confirm",
+            $"Вы действительно хотите удалить заказ: |{order.Id}|?");
+
+        if (confirmed)
+        {
+            var result = await Http.DeleteFromJsonAsync<User>($"api/order/delete/{order.Id}");
+            await GetOrder();
+        }
     }
 }
 

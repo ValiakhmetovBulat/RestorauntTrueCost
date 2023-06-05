@@ -11,6 +11,6 @@ namespace RestorauntTrueCost.Shared.Models
     public class MenuPositionDto
     {
         public MenuPosition menuPosition { get; set; } = null!;
-        public IEnumerable<IFormFile>? files { get; set; }
+        public byte[]? FileData { get; set; }
     }
 }

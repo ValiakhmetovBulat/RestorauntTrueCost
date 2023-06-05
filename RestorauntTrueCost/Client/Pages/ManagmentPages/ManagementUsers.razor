@@ -127,7 +127,7 @@
     {
         bool confirmed = await jsRuntime.InvokeAsync<bool>(
             "confirm", 
-            $"Вы действительно хотите удалить ползователя: |{user.Id}| {user.Surname} {user.Name}?");
+            $"Вы действительно хотите удалить пользователя: |{user.Id}| {user.Surname} {user.Name}?");
 
         if (confirmed)
         {

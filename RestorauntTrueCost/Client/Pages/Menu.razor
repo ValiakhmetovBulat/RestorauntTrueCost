@@ -49,13 +49,13 @@
                                 if (m.PositionTypeId == MenuViewModel.SelectedType.Id)
                                 {
                                     <div class="card-pos">
-                                        @if (m.Photo != null)
+                                    @if (m.Photo != null)
                                         {
-                                            <img src="/images/positions/@m.Photo" class="img-pos" alt="@m.Name" />
+                                        <img src="/api/menu/getimage/@m.Id" class="img-pos" alt="@m.Name" />
                                         }
-                                        <h1>@m.Name</h1>
-                                        <span class="position-description">@m.Decription</span>
-                                        <div class="position-price">@m.Price руб.</div>
+                                    <h1>@m.Name</h1>
+                                    <span class="position-description">@m.Decription</span>
+                                    <div class="position-price">@m.Price руб.</div>
                                         <AuthorizeView>
                                             <Authorized>
                                             <div class="position-count-panel">
@@ -117,5 +117,11 @@
     private string ChangeTypeCssStyle(PositionType type)
     {
         return MenuViewModel.SelectedType.Id == type.Id ? "active-type" : "menu-type";        
+    }
+
+    private async Task<string> LoadImage(int positionId)
+    {
+        var imageUrl = await _httpClient.GetFromJsonAsync<string>($"api/menu/getimage/{positionId}");
+        return imageUrl;
     }
 }

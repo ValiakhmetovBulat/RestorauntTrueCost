@@ -1,0 +1,35 @@
+﻿@page "/reviews"
+@inject HttpClient _httpClient
+
+<PageTitle>Отзывы</PageTitle>
+
+<div class="info-container">
+    <h2 class="page-title">Отзывы</h2>
+    <div class="black-splitter"></div>
+    <div class="review-field">
+        <Message IsShown="@IsShown" IsSuccess="false" MessageText="Отзывов пока нет"></Message>
+        @foreach (var item in reviews)
+        {
+            <div class="review-container">
+                <label class="review-name">@item.User.Name @item.User.Surname</label>
+                <p class="review-text">@item.Message</p>
+                <label class="review-date">@item.DateOfVisit.ToString("D")</label>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Review> reviews = new();
+    private bool IsShown { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        reviews = await _httpClient.GetFromJsonAsync<List<Review>>("api/feedback");
+
+        if (reviews == null)
+        {
+            IsShown = true;
+        }
+    }
+}

@@ -114,5 +114,19 @@ namespace RestorauntTrueCost.Server.Controllers
                 return Forbid();
             }
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("delete/{orderId}")]
+        public async Task<ActionResult<Order>> DeleteOrder(int orderId)
+        {
+            var order = await _db.GetById(orderId);
+            if (order != null)
+            {
+                await _db.Delete(order);
+                return Ok(order);
+            }
+
+            return NotFound();
+        }
     }
 }

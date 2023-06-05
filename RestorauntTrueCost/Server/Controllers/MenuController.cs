@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
 using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Shared.Entities;
 using RestorauntTrueCost.Shared.Models;
 using System.Data;
+using System.IO;
 using System.Net;
 
 namespace RestorauntTrueCost.Server.Controllers
@@ -28,44 +30,74 @@ namespace RestorauntTrueCost.Server.Controllers
         [HttpGet]
         public async Task<IEnumerable<MenuPosition>> Get() => await _db.GetAll();
 
+        [HttpGet("getimage/{positionId}")]
+        public async Task<IActionResult> GetPositionImage(int positionId)
+        {
+            var foundPosition = await _db.GetById(positionId);
+
+            if (foundPosition == null)
+            {
+                return NotFound("Позиция меню не найдена");
+            }
+            if (foundPosition.Photo == null)
+            {
+                return BadRequest("У данной позици нет загруженного изображения");
+            }
+            var fileName = foundPosition.Photo; 
+
+            var filePath = Path.Combine(_env.WebRootPath, fileName);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+            var contentType = GetContentType(fileName);
+
+            return File(fileBytes, contentType, fileName);
+        }
+
+        private string GetContentType(string fileName)
+        {
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(fileName, out var contentType))
+            {
+                contentType = "application/octet-stream"; 
+
+                if (fileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                    fileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase))
+                {
+                    contentType = "image/jpeg";
+                }
+                else if (fileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                {
+                    contentType = "image/png";
+                }
+            }
+            return contentType;
+        }
+
+
         [Authorize(Roles = "Admin")]
         [HttpPost("create")]
         public async Task<ActionResult<MenuPosition>> CreateMenuPosition([FromBody] MenuPositionDto model)
         {
-            var menuPosition = model.menuPosition;
-            var files = model.files;
-
-            if (files != null)
-            {
-                if (files.Count() > 0)
-                {
-                    
-                    foreach (var file in files)
-                    {
-                        string trustedFileName;
-                        var fileName = file.FileName;
-                        try
-                        {
-                            trustedFileName = Path.GetRandomFileName();
-
-                            var path = Path.Combine(_env.ContentRootPath,
-                                _env.EnvironmentName, "uploads",
-                                trustedFileName);
-
-                            await using FileStream fs = new(path, FileMode.Create);
-                            await file.CopyToAsync(fs);
-                        }
-                        catch (Exception)
-                        {
-                            return BadRequest("bad file");
-                        }
-                    }
-                }
-            }         
+            var menuPosition = model.menuPosition;                       
 
             if (_db.Find(u => u.Name == menuPosition.Name).Result.FirstOrDefault() != null)
             {
                 return BadRequest("Позиция меню с данным именем уже существует");
+            }
+
+            if (model.FileData != null)
+            {                
+                var fileName = Path.GetRandomFileName();
+                var filePath = Path.Combine(_env.WebRootPath, fileName);
+                filePath = Path.ChangeExtension(filePath, "png");
+                await System.IO.File.WriteAllBytesAsync(filePath, model.FileData);
+                menuPosition.Photo = filePath;
             }
 
             var lastId = _db.GetAll().Result.Max(u => u.Id) + 1;
@@ -77,11 +109,20 @@ namespace RestorauntTrueCost.Server.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("delete/{menuPositionId}")]
-        public async Task<ActionResult<MenuPosition>> DeleteSection(int menuPositionId)
+        public async Task<ActionResult<MenuPosition>> DeleteMenuPosition(int menuPositionId)
         {
             var positionType = await _db.GetById(menuPositionId);
             if (positionType != null)
             {
+                if (positionType.Photo != null)
+                {
+                    var positionImagePath = Path.Combine(_env.WebRootPath, positionType.Photo);
+
+                    if (System.IO.File.Exists(positionImagePath))
+                    {
+                        System.IO.File.Delete(positionImagePath);
+                    }
+                }
                 await _db.Delete(positionType);
                 return Ok(positionType);
             }
@@ -89,71 +130,9 @@ namespace RestorauntTrueCost.Server.Controllers
             return NotFound();
         }
 
-        [HttpPost("filesave")]
-        public async Task<ActionResult<IList<UploadResult>>> PostFile(
-        [FromForm] IEnumerable<IFormFile> files)
-        {
-            var maxAllowedFiles = 3;
-            long maxFileSize = 1024 * 15 * 1024;
-            var filesProcessed = 0;
-            var resourcePath = new Uri($"{Request.Scheme}://{Request.Host}/");
-            List<UploadResult> uploadResults = new();
-
-            foreach (var file in files)
-            {
-                var uploadResult = new UploadResult();
-                string trustedFileNameForFileStorage;
-                var untrustedFileName = file.FileName;
-                uploadResult.FileName = untrustedFileName;
-                var trustedFileNameForDisplay =
-                    WebUtility.HtmlEncode(untrustedFileName);
-
-                if (filesProcessed < maxAllowedFiles)
-                {
-                    if (file.Length == 0)
-                    {
-                        uploadResult.ErrorCode = 1;
-                    }
-                    else if (file.Length > maxFileSize)
-                    {
-                        uploadResult.ErrorCode = 2;
-                    }
-                    else
-                    {
-                        try
-                        {
-                            trustedFileNameForFileStorage = Path.GetRandomFileName();
-                            var path = Path.Combine(_env.ContentRootPath,
-                                trustedFileNameForFileStorage);
-
-                            await using FileStream fs = new(path, FileMode.Create);
-                            await file.CopyToAsync(fs);
-
-                            uploadResult.Uploaded = true;
-                            uploadResult.StoredFileName = trustedFileNameForFileStorage;
-                        }
-                        catch (IOException ex)
-                        {
-                            uploadResult.ErrorCode = 3;
-                        }
-                    }
-
-                    filesProcessed++;
-                }
-                else
-                {
-                    uploadResult.ErrorCode = 4;
-                }
-
-                uploadResults.Add(uploadResult);
-            }
-
-            return new CreatedResult(resourcePath, uploadResults);
-        }
-
         [Authorize(Roles = "Admin")]
         [HttpGet("getbyid/{menuPositionId}")]
-        public async Task<ActionResult<PositionType>> GetMenuPositionById(int menuPositionId)
+        public async Task<ActionResult<MenuPosition>> GetMenuPositionById(int menuPositionId)
         {
             var menuPosition = await _db.GetById(menuPositionId);
 
@@ -163,6 +142,62 @@ namespace RestorauntTrueCost.Server.Controllers
             }
 
             return NotFound();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("update/{menuPositionId}")]
+        public async Task<ActionResult<MenuPosition>> UpdateMenuPosition(int menuPositionId, [FromBody] MenuPositionDto menuPositionModel)
+        {
+            var foundMenuPosition = await _db.GetById(menuPositionId);
+
+            if (foundMenuPosition != null)
+            {
+                var menuPosition = menuPositionModel.menuPosition;
+                var menuImage = menuPositionModel.FileData;
+
+                var existingMenuPositionWithName = _db.Find(p => p.Name == menuPosition.Name).Result.FirstOrDefault();
+
+                if (existingMenuPositionWithName != null && existingMenuPositionWithName.Id != menuPosition.Id)
+                {
+                    return BadRequest("Позиция меню с данным именем уже существует в системе");
+                }
+                
+                foundMenuPosition.Name = menuPosition.Name;
+                foundMenuPosition.Price = menuPosition.Price;
+                foundMenuPosition.PositionTypeId = menuPosition.PositionTypeId;
+                foundMenuPosition.Decription = menuPosition.Decription;
+                
+                if (menuImage != null)
+                {
+                    if (menuPosition.Photo != null)
+                    {
+                        var positionImagePath = Path.Combine(_env.WebRootPath, menuPosition.Photo);
+
+                        if (System.IO.File.Exists(positionImagePath))
+                        {
+                            System.IO.File.Delete(positionImagePath);
+                        }
+                    }                    
+
+                    var fileName = Path.GetRandomFileName();
+                    var filePath = Path.Combine(_env.WebRootPath, fileName);
+                    filePath = Path.ChangeExtension(filePath, "png");
+                    await System.IO.File.WriteAllBytesAsync(filePath, menuImage);
+                    foundMenuPosition.Photo = filePath;
+                }
+
+                try
+                {
+                    await _db.Update(foundMenuPosition);
+                    return Ok(foundMenuPosition);
+                }
+                catch (Exception)
+                {
+                    return BadRequest("Произошла ошибка при выполнении запроса.");
+                }
+
+            }
+            return BadRequest("Позиция меню не найдена");
         }
     }
 }

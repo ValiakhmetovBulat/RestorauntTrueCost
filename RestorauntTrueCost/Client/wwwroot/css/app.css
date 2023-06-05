@@ -220,3 +220,16 @@ a {
     a:hover {
         color: black;
     }
+
+.btn-cancel {
+    background-color: #dd4b39 !important;
+}
+
+    .btn-cancel:hover {
+        background-color: #C23321 !important;
+        color: #000000 !important;
+    }
+
+.management-button-container {
+    margin-top: 20px;
+}

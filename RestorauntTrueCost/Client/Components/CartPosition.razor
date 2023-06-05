@@ -3,7 +3,7 @@
 @foreach (var position in MenuViewModel.Cart)
 {
     <div class="cart-position-container">
-        <img src="/images/positions/@position.MenuPosition.Photo" alt="@position.MenuPosition.Name" class="cart-position-image">
+        <img src="/api/menu/getimage/@position.MenuPosition.Id" alt="@position.MenuPosition.Name" class="cart-position-image">
         <div class="cart-position-info">
             <div class="cart-position-col">
                 <h1 class="cart-position-name">@position.MenuPosition.Name</h1>
