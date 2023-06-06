@@ -62,6 +62,7 @@
         <button type="submit" class="btn btn-custom">Сохранить</button>
         <button class="btn btn-custom btn-cancel" @onclick="ReturnToManagement">Назад</button>
     </div>
+    <Message IsShown="@IsShown" IsSuccess="@IsSucess" MessageText="@Message"></Message>
     </EditForm>
 
 
@@ -72,6 +73,10 @@
 
     protected List<Role> userRoles = new();
     protected User user = new();
+
+    private bool IsShown { get; set; } = false;
+    private bool IsSucess { get; set; } = false;
+    private string Message { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -105,9 +110,22 @@
                     Name = user.Name,
                     Surname = user.Surname
             };
-            await _httpClient.PutAsJsonAsync(
+            var resp = await _httpClient.PutAsJsonAsync(
                 "api/user/update/" + userId, 
                 userToUpdate);
+
+            if (resp.IsSuccessStatusCode)
+            {
+                IsShown = true;
+                IsSucess = true;
+                Message = "Пользователь был успешно отредактирован";
+            }
+            else
+            {
+                IsShown = true;
+                IsSucess = false;
+                Message = await resp.Content.ReadAsStringAsync();
+            }
         }
         else
         {
@@ -115,7 +133,21 @@
             {
                 user.RoleId = 3;
             }
-            await _httpClient.PostAsJsonAsync("api/user/create", user);
+
+            var resp = await _httpClient.PostAsJsonAsync("api/user/create", user);
+
+            if (resp.IsSuccessStatusCode)
+            {
+                IsShown = true;
+                IsSucess = true;
+                Message = "Пользователь был успешно добавлен";
+            }
+            else
+            {
+                IsShown = true;
+                IsSucess = false;
+                Message = await resp.Content.ReadAsStringAsync();
+            }
         }
     }
 }

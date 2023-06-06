@@ -6,6 +6,8 @@
 @inject ViewNavbarService ViewNavBar
 @inject IJSRuntime jsRuntime
 
+<PageTitle>Администраотор - Пользователи</PageTitle>
+
 <AuthorizeView Roles="Admin">
     <div class="management-container">
 
@@ -14,6 +16,7 @@
             <a class="management-title" href="/management/orders/archive">Архив заказов</a>
             <a class="management-title active-management-title">Пользователи</a>
             <a class="management-title" href="/management/menu">Позиции меню</a>
+            <a class="management-title" href="/management/reviews">Отзывы</a>
         </div>
 
         <br />
@@ -34,7 +37,7 @@
                 </InputSelect>
             </div>
             <div class="input-group col">
-                <input type="text" class="form-control" placeholder="search by name" @bind="@SearchString" @bind:event="oninput" @onkeyup="() => SortUsers()" />
+                <input type="text" class="form-control" placeholder="Поиск..." @bind="@SearchString" @bind:event="oninput" @onkeyup="() => SortUsers()" />
                 @if (SearchString.Length > 0)
                 {
                     <div class="input-group-append">

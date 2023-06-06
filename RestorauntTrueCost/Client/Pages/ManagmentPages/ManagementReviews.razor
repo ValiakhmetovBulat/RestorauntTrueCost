@@ -1,0 +1,269 @@
+﻿@page "/management/reviews"
+@using Microsoft.AspNetCore.Authorization;
+@inject ViewNavbarService navbarView
+@attribute [Authorize(Roles = "Admin,Manager")]
+@inject HttpClient Http
+@inject IJSRuntime jsRuntime
+@inject NavigationManager _navManager
+
+<PageTitle>Администратор - Отзывы</PageTitle>
+
+<div class="management-container">
+
+    <div class="nav-management">
+        <a class="management-title" href="/management/orders/incoming">Ближайшие заказы</a>
+        <a class="management-title" href="/management/orders/archive">Архив заказов</a>
+        <a class="management-title" href="/management/users">Пользователи</a>
+        <a class="management-title" href="/management/menu">Позиции меню</a>
+        <a class="management-title active-management-title">Отзывы</a>        
+    </div>
+
+    <br />
+    <div class="row">        
+        <div class="input-group col">
+            <InputSelect TValue="int" ValueExpression="@(() => selectedSortId)" Value="selectedSortId" ValueChanged="OnRoleChanged" class="form-control">
+                @foreach (var role in Acceptions)
+                {
+                    <option value="@role.Key">@role.Value</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="input-group col">
+            <input type="text" class="form-control" placeholder="Поиск..." @bind="@SearchString" @bind:event="oninput" @onkeyup="() => SortReviews()" />
+            @if (SearchString.Length > 0)
+            {
+                <div class="input-group-append">
+                    <button class="btn btn-danger" @onclick="ResetSearch">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+    <br />
+    @if (SearchReviewList == null)
+    {
+        <p><em>Загрузка...</em></p>
+    }
+    else
+    {
+        <table class="table table-striped align-middle table-bordered">
+            <thead class="table-success">
+                <tr>
+                    <th>ID</th>
+                    <th>Дата отзыва</th>
+                    <th>Гость</th>
+                    <th>Email</th>
+                    <th>Телефон</th>
+                    <th>Комментарий</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var review in SearchReviewList)
+                {
+
+                    <tr>
+                        <td>@review.Id</td>
+                        <td>@review.DateOfVisit</td>
+                        <td>@review.User.Name @review.User.Surname</td>
+                        <td>@review.User.Email</td>
+                        <td>@review.User.Phone</td>
+                        <td>@review.Message</td>
+                        <td>
+                            <button class="btn btn-outline-danger" role="button" @onclick="async ()=> await DeleteReview(review)">
+                                Удалить
+                            </button>
+                        </td>
+                        <td>
+                            @if (!review.IsAccepted)
+                            {
+                                <button class="btn btn-custom" role="button" @onclick="async () => await AcceptRevew(review.Id)">
+                                    Принять
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-custom" role="button" @onclick="async () => await RemoveReview(review.Id)">
+                                    Убрать
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+</div>
+
+@code {
+    protected int selectedSortId = 0;
+    protected Dictionary<int, string> Acceptions = new Dictionary<int, string>()
+    {
+        { 0, "Все отзывы" },
+        { 1, "Принятые" },
+        { 2, "Не принятые" }
+    };
+    protected List<Review> ReviewList = new();
+    protected List<Review> SearchReviewList = new();
+    protected string SearchString { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        navbarView.Hide();
+        await GetReviews();
+    }
+
+    protected async Task GetReviews()
+    {
+        ReviewList = await Http.GetFromJsonAsync<List<Review>>("api/feedback/admin");
+        ReviewList = ReviewList.OrderBy(u => u.DatePosted).ToList();
+        SearchReviewList = ReviewList;
+    }
+
+    private async Task AcceptRevew(int reviewId)
+    {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>(
+            "confirm",
+            $"Вы действительно хотите принять отзыв: |reviewId| ?");
+
+        if (confirmed)
+        {
+            await Http.PutAsJsonAsync("api/feedback/acceptreview/" + reviewId, new ReviewAcceptionDto { IsAccepted = true });
+            await GetReviews();
+            SortReviews();
+        }        
+    }
+
+    private async Task RemoveReview(int reviewId)
+    {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>(
+            "confirm",
+            $"Вы действительно хотите убрать отзыв: |reviewId| ?");
+
+        if (confirmed)
+        {
+            await Http.PutAsJsonAsync("api/feedback/acceptreview/" + reviewId, new ReviewAcceptionDto { IsAccepted = false });
+            await GetReviews();
+            SortReviews();
+        }        
+    }
+
+    private async Task DeleteReview(Review review)
+    {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>(
+            "confirm",
+            $"Вы действительно хотите удалить отзыв: |{review.Id}| {review.DatePosted}?");
+
+        if (confirmed)
+        {
+            var result = await Http.DeleteFromJsonAsync<User>($"api/feedback/delete/{review.Id}");
+            await GetReviews();
+            SortReviews();
+        }
+    }
+
+    private void OnRoleChanged(int role)
+    {
+        selectedSortId = role;
+
+        SortReviews();
+    }
+
+    private void OnSearchValueChanged(string searchString)
+    {
+        SearchString = searchString;
+
+        SortReviews();
+    }
+
+    protected void SortReviews()
+    {
+        var sorted = ReviewList;
+
+        sorted = SortByAccepted(sorted);
+        sorted = SearchReview(sorted);
+
+        SearchReviewList = sorted;
+        StateHasChanged();
+    }
+
+    protected List<Review> SortByAccepted(List<Review> reviews)
+    {
+        switch (selectedSortId)
+        {
+            case 0:
+                break;
+            case 1:
+                {
+                    reviews = reviews.Where(r => r.IsAccepted == true).ToList();
+                    break;
+                }
+            case 2:
+                {
+                    reviews = reviews.Where(r => r.IsAccepted == false).ToList();
+                    break;
+                }
+        }
+
+        return reviews;
+    }
+
+    protected List<Review> SearchReview(List<Review> reviews)
+    {
+        var searchStringLower = SearchString.ToLower();
+
+        if (!string.IsNullOrEmpty(searchStringLower))
+        {
+            reviews = reviews.Where(review => ReviewSearchCondition(review, searchStringLower)).ToList();
+        }
+
+        return reviews;
+    }
+
+    private static bool ReviewSearchCondition(Review review, string searchString)
+    {
+        if (!string.IsNullOrWhiteSpace(review.User.Name) && review.User.Name.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(review.User.Surname) && review.User.Surname.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(review.NumberOfGuests.ToString()) && review.NumberOfGuests.ToString().ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(review.TableNumber.ToString()) && review.TableNumber.ToString().ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (review.Id.ToString().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (review.DateOfVisit.ToString().ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        if (review.Message.ToLower().Contains(searchString))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void ResetSearch()
+    {
+        SearchString = string.Empty;
+        SearchReviewList = ReviewList;
+    }
+}

@@ -6,6 +6,8 @@
 @inject ViewNavbarService ViewNavBar
 @inject IJSRuntime jsRuntime
 
+<PageTitle>Администраотор - Заказы</PageTitle>
+
 <AuthorizeView Roles="Manager,Admin">  
     <div class="management-container">
 
@@ -17,6 +19,7 @@
                 <a class="management-title" href="/management/users">Пользователи</a>
                 <a class="management-title" href="/management/menu">Позиции меню</a>
             }
+            <a class="management-title" href="/management/reviews">Отзывы</a>
         </div>        
 
         <br/>
@@ -32,7 +35,7 @@
                 </InputSelect>
             </div>
             <div class="input-group col">
-                <input type="text" class="form-control" placeholder="Искать по ФИО"
+                <input type="text" class="form-control" placeholder="Поиск..."
                        @bind="SearchString" @bind:event="oninput" @onkeyup="() => SortOrders()" />
                 @if (SearchString.Length > 0)
                 {

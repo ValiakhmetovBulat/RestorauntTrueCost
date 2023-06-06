@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RestorauntTrueCost.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-
+using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
 
