@@ -11,7 +11,7 @@ namespace RestorauntTrueCost.Server.Controllers
     public class CartController : ControllerBase
     {
         ICartToPositionRepository _db;
-        
+
         public CartController(ICartToPositionRepository db)
         {
             _db = db;
@@ -21,7 +21,7 @@ namespace RestorauntTrueCost.Server.Controllers
         [HttpGet("mycart")]
         public async Task<ActionResult<IEnumerable<CartToPosition>>> GetUserCart()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);            
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userId != null)
             {
@@ -90,8 +90,8 @@ namespace RestorauntTrueCost.Server.Controllers
                     else
                     {
                         return NotFound();
-                    }                      
-                    
+                    }
+
                 }
                 else
                 {
@@ -141,14 +141,14 @@ namespace RestorauntTrueCost.Server.Controllers
                         {
                             return BadRequest("Position doesn't exists");
                         }
-                       
+
                         return Ok(cartPosition);
-                    }                    
+                    }
                 }
                 else
                 {
                     return BadRequest("Invalid UserId");
-                }                
+                }
             }
             else
             {
@@ -185,7 +185,7 @@ namespace RestorauntTrueCost.Server.Controllers
 
                             await _db.Update(existedCartPosition);
                             return Ok(existedCartPosition);
-                        }                        
+                        }
                     }
                     else
                     {

@@ -21,7 +21,7 @@ namespace RestorauntTrueCost.Client.ViewModels
 
         public FeedbackViewModel()
         {
-            
+
         }
 
         public FeedbackViewModel(HttpClient httpClient)
@@ -30,7 +30,7 @@ namespace RestorauntTrueCost.Client.ViewModels
         }
 
         public async Task SendFeedback()
-        {            
+        {
             Review review = this;
             var resp = await _httpClient.PostAsJsonAsync("api/feedback/leavefeedback", review);
             if (resp.IsSuccessStatusCode && review.Message.Length >= 1)

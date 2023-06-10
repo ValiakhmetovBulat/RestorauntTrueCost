@@ -8,7 +8,7 @@ namespace RestorauntTrueCost.Shared.Helpers.Validations
         public EmailValidator()
             : base("Email is not valid")
         {
-            
+
         }
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)

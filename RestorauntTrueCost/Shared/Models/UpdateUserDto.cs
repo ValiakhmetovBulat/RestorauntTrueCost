@@ -1,9 +1,4 @@
 ﻿using RestorauntTrueCost.Shared.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RestorauntTrueCost.Shared.Models
 {
@@ -17,7 +12,7 @@ namespace RestorauntTrueCost.Shared.Models
 
         public static implicit operator UpdateUserDto(User user)
         {
-            return new UpdateUserDto 
+            return new UpdateUserDto
             {
                 Name = user.Name,
                 Email = user.Email,
@@ -40,5 +35,5 @@ namespace RestorauntTrueCost.Shared.Models
         }
     }
 
-    
+
 }

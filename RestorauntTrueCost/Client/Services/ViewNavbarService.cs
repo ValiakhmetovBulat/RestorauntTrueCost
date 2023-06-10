@@ -22,7 +22,7 @@
         {
             get
             {
-                if (_navBarVisible) 
+                if (_navBarVisible)
                     return string.Empty;
 
                 return "d-none";

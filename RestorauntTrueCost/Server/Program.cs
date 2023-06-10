@@ -1,19 +1,10 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using RestorauntTrueCost.Server.Models;
 using RestorauntTrueCost.Server.Models.DatabaseContext;
 using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Server.Models.Repositories.EntitiesRepositories;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
-using RestorauntTrueCost.Shared.Entities;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
 

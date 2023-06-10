@@ -7,7 +7,7 @@ namespace RestorauntTrueCost.Shared.Helpers.Validations
         private string _str;
 
         public EqualsString(string str)
-            :base("{0} must be equal to " + str)
+            : base("{0} must be equal to " + str)
         {
             _str = str;
         }

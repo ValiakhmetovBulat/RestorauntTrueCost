@@ -6,7 +6,6 @@ using RestorauntTrueCost.Client.Models.Authentication;
 using RestorauntTrueCost.Client.Services;
 using RestorauntTrueCost.Client.ViewModels;
 using RestorauntTrueCost.Client.ViewModels.Interfaces;
-using RestorauntTrueCost.Shared.Entities;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -27,7 +26,7 @@ builder.Services.AddTransient<IOrderViewModel, OrderViewModel>();
 builder.Services.AddTransient<IMenuViewModel, MenuViewModel>();
 builder.Services.AddTransient<IOrderPrepareViewModel, OrderPrepareViewModel>();
 builder.Services.AddTransient<IOrderHistoryViewModel, OrderHistoryViewModel>();
-builder.Services.AddTransient<IOrderManagementViewModel,  OrderManagementViewModel>();
+builder.Services.AddTransient<IOrderManagementViewModel, OrderManagementViewModel>();
 #endregion
 
 #region Services

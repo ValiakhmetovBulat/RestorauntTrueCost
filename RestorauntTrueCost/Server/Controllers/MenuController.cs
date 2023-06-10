@@ -1,13 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Logging;
 using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Shared.Entities;
 using RestorauntTrueCost.Shared.Models;
-using System.Data;
-using System.IO;
-using System.Net;
 
 namespace RestorauntTrueCost.Server.Controllers
 {
@@ -17,7 +13,7 @@ namespace RestorauntTrueCost.Server.Controllers
     {
         IMenuPositionsRepository _db;
         IWebHostEnvironment _env;
-        
+
         public MenuController(IMenuPositionsRepository db, IWebHostEnvironment env)
         {
             _db = db;
@@ -43,7 +39,7 @@ namespace RestorauntTrueCost.Server.Controllers
             {
                 return BadRequest("” данной позици нет загруженного изображени€");
             }
-            var fileName = foundPosition.Photo; 
+            var fileName = foundPosition.Photo;
 
             var filePath = Path.Combine(_env.WebRootPath, fileName);
 
@@ -64,7 +60,7 @@ namespace RestorauntTrueCost.Server.Controllers
             var provider = new FileExtensionContentTypeProvider();
             if (!provider.TryGetContentType(fileName, out var contentType))
             {
-                contentType = "application/octet-stream"; 
+                contentType = "application/octet-stream";
 
                 if (fileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
                     fileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase))
@@ -84,7 +80,7 @@ namespace RestorauntTrueCost.Server.Controllers
         [HttpPost("create")]
         public async Task<ActionResult<MenuPosition>> CreateMenuPosition([FromBody] MenuPositionDto model)
         {
-            var menuPosition = model.menuPosition;                       
+            var menuPosition = model.menuPosition;
 
             if (_db.Find(u => u.Name == menuPosition.Name).Result.FirstOrDefault() != null)
             {
@@ -92,7 +88,7 @@ namespace RestorauntTrueCost.Server.Controllers
             }
 
             if (model.FileData != null)
-            {                
+            {
                 var fileName = Path.GetRandomFileName();
                 var filePath = Path.Combine(_env.WebRootPath, fileName);
                 filePath = Path.ChangeExtension(filePath, "png");
@@ -161,12 +157,12 @@ namespace RestorauntTrueCost.Server.Controllers
                 {
                     return BadRequest("ѕозици€ меню с данным именем уже существует в системе");
                 }
-                
+
                 foundMenuPosition.Name = menuPosition.Name;
                 foundMenuPosition.Price = menuPosition.Price;
                 foundMenuPosition.PositionTypeId = menuPosition.PositionTypeId;
                 foundMenuPosition.Decription = menuPosition.Decription;
-                
+
                 if (menuImage != null)
                 {
                     if (menuPosition.Photo != null)
@@ -177,7 +173,7 @@ namespace RestorauntTrueCost.Server.Controllers
                         {
                             System.IO.File.Delete(positionImagePath);
                         }
-                    }                    
+                    }
 
                     var fileName = Path.GetRandomFileName();
                     var filePath = Path.Combine(_env.WebRootPath, fileName);

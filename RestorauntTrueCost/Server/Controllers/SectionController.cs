@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Shared.Entities;
-using System.Data;
 
 namespace RestorauntTrueCost.Server.Controllers
 {
@@ -65,7 +64,7 @@ namespace RestorauntTrueCost.Server.Controllers
                 catch (Exception)
                 {
                     return BadRequest("Чтобы удалить секцию меню сначала необходимо удалить все типы секции");
-                }                
+                }
             }
 
             return NotFound();

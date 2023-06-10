@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Shared.Entities;
 
@@ -18,6 +17,6 @@ namespace RestorauntTrueCost.Server.Controllers
 
         [HttpGet]
         public async Task<IEnumerable<OrderStatus>> Get() => await _db.GetAll();
-        
+
     }
 }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace RestorauntTrueCost.Shared.Entities;
 
 public partial class Review
 {
-    public int Id { get; set; }    
+    public int Id { get; set; }
 
     public DateTime DateOfVisit { get; set; }
 

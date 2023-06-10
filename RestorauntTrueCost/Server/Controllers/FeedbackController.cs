@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Shared.Entities;
@@ -23,11 +22,11 @@ namespace RestorauntTrueCost.Server.Controllers
         public async Task<IEnumerable<Review>> Get() => await _db.GetAll();
 
         [HttpGet]
-        public async Task<IEnumerable<Review>> GetAll() 
+        public async Task<IEnumerable<Review>> GetAll()
         {
-           var reviewList = await _db.GetAll();
-           reviewList = reviewList.Where(r => r.IsAccepted == true).ToList();  
-           return reviewList;
+            var reviewList = await _db.GetAll();
+            reviewList = reviewList.Where(r => r.IsAccepted == true).ToList();
+            return reviewList;
         }
 
         [Authorize(Roles = "Admin,Manager")]

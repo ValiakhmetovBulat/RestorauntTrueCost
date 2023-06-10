@@ -1,10 +1,9 @@
 ﻿using RestorauntTrueCost.Client.ViewModels.Interfaces;
-using RestorauntTrueCost.Shared.Entities;
-using System.Net.Http.Json;
-using System.Net;
-using System.ComponentModel.DataAnnotations;
 using RestorauntTrueCost.Shared.Helpers.Validations;
 using RestorauntTrueCost.Shared.Models;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace RestorauntTrueCost.Client.ViewModels
 {
@@ -24,7 +23,7 @@ namespace RestorauntTrueCost.Client.ViewModels
 
         public ProfileViewModel()
         {
-            
+
         }
         public ProfileViewModel(HttpClient httpClient)
         {

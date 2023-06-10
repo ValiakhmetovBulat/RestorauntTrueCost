@@ -1,6 +1,4 @@
-﻿using RestorauntTrueCost.Client.Components;
-using RestorauntTrueCost.Client.Pages;
-using RestorauntTrueCost.Client.ViewModels.Interfaces;
+﻿using RestorauntTrueCost.Client.ViewModels.Interfaces;
 using RestorauntTrueCost.Shared.Entities;
 using System.Net.Http.Json;
 
@@ -50,7 +48,7 @@ namespace RestorauntTrueCost.Client.ViewModels
         public async Task CreateOrder()
         {
             if (string.IsNullOrWhiteSpace(FromTo))
-            {                
+            {
                 this.Message = "Пожалуйста, выберите время бронирования";
                 return;
             }
@@ -59,9 +57,9 @@ namespace RestorauntTrueCost.Client.ViewModels
                 this.Message = "Пожалуйста, выберите столы для бронирования";
                 return;
             }
-            RestorauntTrueCost.Shared.Entities.Order order = new RestorauntTrueCost.Shared.Entities.Order();            
+            RestorauntTrueCost.Shared.Entities.Order order = new RestorauntTrueCost.Shared.Entities.Order();
 
-            order.CreatedDate = DateTime.Now;            
+            order.CreatedDate = DateTime.Now;
             order.TotalSum = CalculateTotalSum();
             order.OrderStatusId = 1;
 
@@ -103,7 +101,7 @@ namespace RestorauntTrueCost.Client.ViewModels
             return sum;
         }
 
-        public void AddTableToOrder (Table table)
+        public void AddTableToOrder(Table table)
         {
             if (Tables.Contains(table))
             {

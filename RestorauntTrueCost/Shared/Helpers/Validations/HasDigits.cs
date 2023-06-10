@@ -6,7 +6,7 @@ namespace RestorauntTrueCost.Shared.Helpers.Validations
     {
         private int _amountOfDigits;
 
-        public HasDigits(int amountOfDigits = 1) 
+        public HasDigits(int amountOfDigits = 1)
             : base("{0} must contatin at least " + amountOfDigits + (amountOfDigits == 1 ? " digit" : " digits"))
         {
             _amountOfDigits = amountOfDigits;

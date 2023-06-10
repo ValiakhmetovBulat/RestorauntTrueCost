@@ -1,9 +1,8 @@
 ﻿using RestorauntTrueCost.Client.ViewModels.Interfaces;
-using RestorauntTrueCost.Shared.Entities;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Http.Json;
-using System.Net;
 using RestorauntTrueCost.Shared.Models;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace RestorauntTrueCost.Client.ViewModels
 {
@@ -20,7 +19,7 @@ namespace RestorauntTrueCost.Client.ViewModels
 
         public LoginViewModel()
         {
-            
+
         }
         public LoginViewModel(HttpClient httpClient)
         {

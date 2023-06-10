@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RestorauntTrueCost.Client.Pages;
-using RestorauntTrueCost.Server.Models;
 using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
-using RestorauntTrueCost.Shared.Entities;
 using RestorauntTrueCost.Shared.Models;
 using System.Security.Claims;
 using Order = RestorauntTrueCost.Shared.Entities.Order;

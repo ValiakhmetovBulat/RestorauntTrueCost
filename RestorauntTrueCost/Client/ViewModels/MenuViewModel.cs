@@ -1,7 +1,5 @@
 ﻿using RestorauntTrueCost.Client.ViewModels.Interfaces;
 using RestorauntTrueCost.Shared.Entities;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Net.Http.Json;
 
 namespace RestorauntTrueCost.Client.ViewModels
@@ -13,7 +11,7 @@ namespace RestorauntTrueCost.Client.ViewModels
         public List<MenuPosition> MenuPositions { get; set; } = new List<MenuPosition>();
         public List<CartToPosition> Cart { get; set; } = new List<CartToPosition>();
         public Section? SelectedSection { get; set; }
-        public PositionType? SelectedType { get; set; } 
+        public PositionType? SelectedType { get; set; }
 
         private HttpClient _httpClient;
 
@@ -41,7 +39,7 @@ namespace RestorauntTrueCost.Client.ViewModels
             }
 
             return sections;
-        }        
+        }
 
         public async Task<List<PositionType>> GetMenuPositionTypes()
         {
@@ -71,7 +69,7 @@ namespace RestorauntTrueCost.Client.ViewModels
 
         public async Task AddToCart(int positionId)
         {
-            var resp = await _httpClient.PostAsJsonAsync("api/cart/add/" + positionId, positionId);            
+            var resp = await _httpClient.PostAsJsonAsync("api/cart/add/" + positionId, positionId);
 
             if (resp.IsSuccessStatusCode)
             {
@@ -81,7 +79,7 @@ namespace RestorauntTrueCost.Client.ViewModels
 
         public async Task RemoveFromCart(int positionId)
         {
-            var resp = await _httpClient.PostAsJsonAsync("api/cart/remove/" + positionId, positionId);           
+            var resp = await _httpClient.PostAsJsonAsync("api/cart/remove/" + positionId, positionId);
 
             if (resp.IsSuccessStatusCode)
             {

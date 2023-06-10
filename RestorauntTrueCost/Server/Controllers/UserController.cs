@@ -1,15 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using RestorauntTrueCost.Client.ViewModels;
 using RestorauntTrueCost.Server.Models;
 using RestorauntTrueCost.Server.Models.Repositories.EntitiesInterfaces;
 using RestorauntTrueCost.Shared.Entities;
 using RestorauntTrueCost.Shared.Models;
-using System;
 using System.Security.Claims;
 
 namespace RestorauntTrueCost.Server.Controllers
@@ -41,7 +37,7 @@ namespace RestorauntTrueCost.Server.Controllers
             }
 
             return NotFound();
-        } 
+        }
 
         [HttpPost("register")]
         public async Task<ActionResult<User>> RegisterUser(UserDto user)
@@ -72,7 +68,7 @@ namespace RestorauntTrueCost.Server.Controllers
             {
                 return BadRequest("Данная почта уже зарегестрирована в системе");
             }
-            
+
             if (user.RoleId == 0)
             {
                 return BadRequest("Некорретная роль пользователя");
@@ -87,7 +83,7 @@ namespace RestorauntTrueCost.Server.Controllers
             {
                 return BadRequest("При выполнении запроса произошла ошибка. Возможно указанной роли не сущестует");
             }
-            
+
         }
 
         [HttpPost("login")]
@@ -97,10 +93,10 @@ namespace RestorauntTrueCost.Server.Controllers
             User loguser = _db.Find(u => u.Email == user.Email && u.Password == user.Password).Result.FirstOrDefault();
 
             if (loguser != null)
-            {       
+            {
                 var claimEmail = new Claim(ClaimTypes.Email, loguser.Email);
                 var claimNameIdentifier = new Claim(ClaimTypes.NameIdentifier, loguser.Id.ToString());
-                var claimRole = new Claim(ClaimTypes.Role, Convert.ToString(loguser.Role.Name)); 
+                var claimRole = new Claim(ClaimTypes.Role, Convert.ToString(loguser.Role.Name));
                 var claimsIdentity = new ClaimsIdentity(new[] { claimEmail, claimNameIdentifier, claimRole }, "serverAuth");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 await HttpContext.SignInAsync(claimsPrincipal, _getAuthenticationProperties());
@@ -116,13 +112,13 @@ namespace RestorauntTrueCost.Server.Controllers
 
             if (User.Identity.IsAuthenticated)
             {
-                currentUser.Email = User.FindFirstValue(ClaimTypes.Email); 
+                currentUser.Email = User.FindFirstValue(ClaimTypes.Email);
                 currentUser = _db.Find(u => u.Email == currentUser.Email).Result.FirstOrDefault();
 
                 if (currentUser == null)
                 {
                     return Ok(new User());
-                }                
+                }
             }
             return Ok(currentUser);
         }
@@ -141,9 +137,9 @@ namespace RestorauntTrueCost.Server.Controllers
                     if (userWithEmail != null && foundUser.Email != user.Email)
                     {
                         return BadRequest("Данная почта уже зарегестрирована в системе");
-                    }                    
-                    foundUser.Email = user.Email;                                                
-                }                
+                    }
+                    foundUser.Email = user.Email;
+                }
                 foundUser.Name = user.Name;
                 foundUser.Phone = user.Phone;
                 if (user.RoleId != 0)
@@ -154,12 +150,12 @@ namespace RestorauntTrueCost.Server.Controllers
                 {
                     await _db.Update(foundUser);
                     return Ok(foundUser);
-                }   
+                }
                 catch (Exception)
                 {
                     return BadRequest("Произошла ошибка при выполнении запроса.");
                 }
-                
+
             }
             return BadRequest("User not found");
         }
@@ -258,6 +254,6 @@ namespace RestorauntTrueCost.Server.Controllers
                 RedirectUri = "/profile/update",
             };
         }
-        
+
     }
 }

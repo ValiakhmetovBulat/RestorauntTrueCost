@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using RestorauntTrueCost.Shared.Entities;
+﻿using RestorauntTrueCost.Shared.Entities;
 
 namespace RestorauntTrueCost.Shared.Models
 {

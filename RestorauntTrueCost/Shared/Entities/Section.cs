@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
-namespace RestorauntTrueCost.Shared.Entities;
+﻿namespace RestorauntTrueCost.Shared.Entities;
 
 public partial class Section
 {

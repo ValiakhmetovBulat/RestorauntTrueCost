@@ -19,6 +19,6 @@ namespace RestorauntTrueCost.Client.ViewModels.Interfaces
         public Task AddToCart(int positionId);
         public Task RemoveFromCart(int positionId);
         public Task RemoveAllPositionFromCart(int positionId);
-        
+
     }
 }

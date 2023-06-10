@@ -1,5 +1,5 @@
-﻿using RestorauntTrueCost.Shared.Helpers.Validations;
-using RestorauntTrueCost.Client.ViewModels.Interfaces;
+﻿using RestorauntTrueCost.Client.ViewModels.Interfaces;
+using RestorauntTrueCost.Shared.Helpers.Validations;
 using RestorauntTrueCost.Shared.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Json;
@@ -27,7 +27,7 @@ namespace RestorauntTrueCost.Client.ViewModels
 
         public RegistrationViewModel()
         {
-            
+
         }
 
         public RegistrationViewModel(HttpClient httpClient)
@@ -40,7 +40,7 @@ namespace RestorauntTrueCost.Client.ViewModels
             UserDto user = this;
             var resp = new HttpResponseMessage();
 
-            if (Password == PasswordConfirmation)            
+            if (Password == PasswordConfirmation)
             {
                 resp = await _httpClient.PostAsJsonAsync("api/user/register", user);
                 if (resp.StatusCode == System.Net.HttpStatusCode.BadRequest)
@@ -50,7 +50,7 @@ namespace RestorauntTrueCost.Client.ViewModels
                 else
                 {
                     this.Message = "Успешная регистрация";
-                }                
+                }
             }
             else
             {
@@ -68,7 +68,7 @@ namespace RestorauntTrueCost.Client.ViewModels
                 Email = user.Email,
                 Password = user.Password,
             };
-        } 
+        }
 
         public static implicit operator UserDto(RegistrationViewModel registrationViewModel)
         {
