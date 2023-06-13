@@ -10,9 +10,9 @@ namespace RestorauntTrueCost.Client.ViewModels
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; } = "user@example.com";
+        public string Email { get; set; }
         [Required]
-        public string Password { get; set; } = "string";
+        public string Password { get; set; }
         public string Message { get; set; }
 
         private readonly HttpClient _httpClient;
