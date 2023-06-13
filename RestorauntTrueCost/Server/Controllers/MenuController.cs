@@ -37,7 +37,7 @@ namespace RestorauntTrueCost.Server.Controllers
             }
             if (foundPosition.Photo == null)
             {
-                return BadRequest("” данной позици нет загруженного изображени€");
+                return BadRequest("” данной позиции нет загруженного изображени€");
             }
             var fileName = foundPosition.Photo;
 
@@ -93,7 +93,7 @@ namespace RestorauntTrueCost.Server.Controllers
                 var filePath = Path.Combine(_env.WebRootPath, fileName);
                 filePath = Path.ChangeExtension(filePath, "png");
                 await System.IO.File.WriteAllBytesAsync(filePath, model.FileData);
-                menuPosition.Photo = filePath;
+                menuPosition.Photo = Path.ChangeExtension(fileName, "png");
             }
 
             var lastId = _db.GetAll().Result.Max(u => u.Id) + 1;
@@ -173,13 +173,13 @@ namespace RestorauntTrueCost.Server.Controllers
                         {
                             System.IO.File.Delete(positionImagePath);
                         }
-                    }
+                    }                   
 
                     var fileName = Path.GetRandomFileName();
                     var filePath = Path.Combine(_env.WebRootPath, fileName);
                     filePath = Path.ChangeExtension(filePath, "png");
-                    await System.IO.File.WriteAllBytesAsync(filePath, menuImage);
-                    foundMenuPosition.Photo = filePath;
+                    await System.IO.File.WriteAllBytesAsync(filePath, menuImage);                    
+                    foundMenuPosition.Photo = Path.ChangeExtension(fileName, "png");
                 }
 
                 try
