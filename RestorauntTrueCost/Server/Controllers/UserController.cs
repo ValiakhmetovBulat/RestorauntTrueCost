@@ -129,8 +129,7 @@ namespace RestorauntTrueCost.Server.Controllers
         {
             var foundUser = await _db.GetById(userId);
             if (foundUser != null)
-            {
-                foundUser.Surname = user.Surname;
+            {                
                 if (!string.IsNullOrWhiteSpace(user.Email))
                 {
                     var userWithEmail = _db.Find(u => u.Email == user.Email).Result.FirstOrDefault();
@@ -141,7 +140,12 @@ namespace RestorauntTrueCost.Server.Controllers
                     foundUser.Email = user.Email;
                 }
                 foundUser.Name = user.Name;
+                foundUser.Surname = user.Surname;
                 foundUser.Phone = user.Phone;
+                if (user.Password != null)
+                {
+                    foundUser.Password = Encryption.Encrypt(user.Password);
+                }                
                 if (user.RoleId != 0)
                 {
                     foundUser.RoleId = user.RoleId;

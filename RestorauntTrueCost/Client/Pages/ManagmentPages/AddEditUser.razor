@@ -108,7 +108,8 @@
                     Email = user.Email,
                     Phone = user.Phone,
                     Name = user.Name,
-                    Surname = user.Surname
+                    Surname = user.Surname,
+                    Password = user.Password,
             };
             var resp = await _httpClient.PutAsJsonAsync(
                 "api/user/update/" + userId, 
