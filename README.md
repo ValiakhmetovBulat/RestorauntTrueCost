@@ -31,3 +31,34 @@
 <h2>Лицензия</h2>
 
 <p>Этот проект лицензируется в соответствии с <a href="LICENSE">MIT License</a>.</p>
+
+<h2>Тестовые данные</h2>
+
+<h1>Тестовые данные</h1>
+
+<p>Аккаунты, содержащиеся в скрипте в папке Samples:</p>
+
+<ol>
+  <li>
+    <strong>Администратор:</strong>
+    <ul>
+      <li>Логин: admin@example.com</li>
+      <li>Пароль: Admin123</li>
+    </ul>
+  </li>
+  <li>
+    <strong>Менеджер:</strong>
+    <ul>
+      <li>Логин: manager@example.com</li>
+      <li>Пароль: Manager123</li>
+    </ul>
+  </li>
+  <li>
+    <strong>Пользователь:</strong>
+    <ul>
+      <li>Логин: user@example.com</li>
+      <li>Пароль: User123</li>
+    </ul>
+  </li>
+</ol>
+
