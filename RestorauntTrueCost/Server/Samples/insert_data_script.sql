@@ -101,7 +101,7 @@ INSERT INTO public."MenuPositions" ("Id", "Name", "Price", "PositionTypeId", "De
 INSERT INTO public."MenuPositions" ("Id", "Name", "Price", "PositionTypeId", "Decription", "Photo") VALUES (37, 'Борщ с говядиной', 340, 14, 'С ломтиком сала на хлебном чипсе и сметаной', 'borshh.jpg');
 INSERT INTO public."MenuPositions" ("Id", "Name", "Price", "PositionTypeId", "Decription", "Photo") VALUES (38, 'Суп-пюре грибной', 340, 14, 'Из шампиньонов и картофеля с сухариками и зеленью', 'pyure-gribnoj.jpg');
 INSERT INTO public."MenuPositions" ("Id", "Name", "Price", "PositionTypeId", "Decription", "Photo") VALUES (39, 'Венгерский суп-гуляш', 370, 14, 'Густой суп с пикантной остротой с болгарским перцем, картофелем, говядиной, луком, морковью и чесночком', 'sup-gulyash.jpg');
-INSERT INTO public."MenuPositions" ("Id", "Name", "Price", "PositionTypeId", "Decription", "Photo") VALUES (40, 'William', 1000, 5, 'Виски', NULL);
+
 
 
 --
@@ -121,35 +121,9 @@ INSERT INTO public."Roles" ("Id", "Name", "Description") VALUES (3, 'User', '');
 -- Data for Name: Users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (48, '2023-05-24 17:49:29.114041+03', 'valiaxmetovb130@gmail.com', 'fd16a186df7270bc1e6e448ff3dd421c', 'Булат', NULL, 'Валиахметов', 3);
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (50, '2023-05-27 10:58:24.589008+03', 'jason@mail.ru', 'fd16a186df7270bc1e6e448ff3dd421c', 'asd', '89874166850', 'zxc', 1);
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (47, '2023-05-23 16:00:58.241401+03', 'user@example.com', 'f388f500c000b5866392e993de59faf4', 'string', '89874166850', 'string', 1);
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (54, '2023-05-27 17:41:59.282+03', 'valiaxmetovb245@gmail.com', 'ASDasd123', 'asd', '89874166850', 'asd', 2);
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (55, '2023-05-29 19:06:45.691+03', 'user1@example.com', 'ASDasd123', 'string', '89874166850', 'string', 3);
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (56, '2023-05-30 19:10:15.747+03', 'valiaxmetovb222@gmail.com', 'ASDasd123', 'asd', '89874166850', 'asd', 3);
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (57, '2023-05-30 19:10:15.747+03', 'valiaxmetovb22@gmail.com', 'ASDasd123', 'asd', '89874166850', 'asd', 1);
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (59, '2023-06-02 05:06:04.80592+03', 'user123@example.com', 'ASDasd123', NULL, NULL, NULL, 3);
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (60, '2023-06-02 05:14:29.007416+03', 'user122@example.com', 'ASDasd123', NULL, NULL, NULL, 3);
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (63, '2023-06-02 05:59:58.438716+03', 'new@example.com', 'fd16a186df7270bc1e6e448ff3dd421c', NULL, NULL, NULL, 3);
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (65, '2023-06-02 03:53:17.954516+03', 'valiaxmetovb140@gmail.com', 'fd16a186df7270bc1e6e448ff3dd421c', NULL, NULL, NULL, 3);
-INSERT INTO public."Users" ("Id", "RegistrationDate", "Email", "Password", "Name", "Phone", "Surname", "RoleId") VALUES (66, '2023-06-02 07:34:47.485+03', 'ioio@gmail.com', 'fd16a186df7270bc1e6e448ff3dd421c', 'Булат', '89999999999', 'Валиахметов', 2);
-
-
---
--- TOC entry 3456 (class 0 OID 74382)
--- Dependencies: 236
--- Data for Name: CartToPositions; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-INSERT INTO public."CartToPositions" ("Id", "UserId", "MenuPositionId", "Count") VALUES (148, 48, 2, 4);
-INSERT INTO public."CartToPositions" ("Id", "UserId", "MenuPositionId", "Count") VALUES (154, 50, 1, 1);
-INSERT INTO public."CartToPositions" ("Id", "UserId", "MenuPositionId", "Count") VALUES (155, 50, 2, 1);
-INSERT INTO public."CartToPositions" ("Id", "UserId", "MenuPositionId", "Count") VALUES (156, 50, 3, 1);
-INSERT INTO public."CartToPositions" ("Id", "UserId", "MenuPositionId", "Count") VALUES (157, 47, 4, 1);
-INSERT INTO public."CartToPositions" ("Id", "UserId", "MenuPositionId", "Count") VALUES (158, 47, 5, 3);
-INSERT INTO public."CartToPositions" ("Id", "UserId", "MenuPositionId", "Count") VALUES (159, 47, 1, 1);
-INSERT INTO public."CartToPositions" ("Id", "UserId", "MenuPositionId", "Count") VALUES (160, 47, 2, 1);
-
+INSERT INTO public."Users" VALUES (47, '2023-05-23 16:00:58.241401+03', 'admin@example.com', '4c4fe172581eb4ca44603399f18a060a', 'Булат', '89874166850', 'Валиахметов', 1);
+INSERT INTO public."Users" VALUES (68, '2023-06-13 21:22:02.081+03', 'user@example.com', '34b9e6bee0b8d41f357369065b20d5f4', 'Булат', '89999999999', 'Валиахметов', 3);
+INSERT INTO public."Users" VALUES (69, '2023-06-13 21:22:26.808+03', 'manager@example.com', 'f4109c28c3a12c62959cfa16e61be870', 'Булат', '89999999999', 'Валиахметов', 2);
 
 --
 -- TOC entry 3452 (class 0 OID 66127)
@@ -166,7 +140,6 @@ INSERT INTO public."OrderPeriods" ("Id", "FromTo") VALUES (6, '18-20');
 INSERT INTO public."OrderPeriods" ("Id", "FromTo") VALUES (7, '20-22');
 INSERT INTO public."OrderPeriods" ("Id", "FromTo") VALUES (8, '22-00');
 
-
 --
 -- TOC entry 3457 (class 0 OID 82541)
 -- Dependencies: 237
@@ -177,50 +150,6 @@ INSERT INTO public."OrderStatus" ("Id", "Name", "HashColor") VALUES (2, 'Принят 
 INSERT INTO public."OrderStatus" ("Id", "Name", "HashColor") VALUES (3, 'Завершен удачно', '#4ABBA4');
 INSERT INTO public."OrderStatus" ("Id", "Name", "HashColor") VALUES (4, 'Отменен', '#ed8e82');
 INSERT INTO public."OrderStatus" ("Id", "Name", "HashColor") VALUES (1, 'Новый', '#fde6ff');
-
-
---
--- TOC entry 3446 (class 0 OID 66016)
--- Dependencies: 226
--- Data for Name: Orders; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-INSERT INTO public."Orders" ("Id", "CreatedDate", "UserId", "TotalSum", "OrderStatusId") VALUES (49, '2023-05-23 20:00:50.167', 47, 1700, 3);
-INSERT INTO public."Orders" ("Id", "CreatedDate", "UserId", "TotalSum", "OrderStatusId") VALUES (56, '2023-05-27 13:58:46.484', 50, 3250, 2);
-INSERT INTO public."Orders" ("Id", "CreatedDate", "UserId", "TotalSum", "OrderStatusId") VALUES (58, '2023-06-02 07:13:55.554', 65, 1600, 1);
-INSERT INTO public."Orders" ("Id", "CreatedDate", "UserId", "TotalSum", "OrderStatusId") VALUES (57, '2023-05-28 18:17:49.004', 47, 14100, 3);
-INSERT INTO public."Orders" ("Id", "CreatedDate", "UserId", "TotalSum", "OrderStatusId") VALUES (54, '2023-05-24 20:50:30.429', 48, 2000, 1);
-INSERT INTO public."Orders" ("Id", "CreatedDate", "UserId", "TotalSum", "OrderStatusId") VALUES (51, '2023-05-24 00:14:22.019', 47, 2600, 1);
-INSERT INTO public."Orders" ("Id", "CreatedDate", "UserId", "TotalSum", "OrderStatusId") VALUES (53, '2023-05-24 00:15:11.948', 47, 2700, 1);
-INSERT INTO public."Orders" ("Id", "CreatedDate", "UserId", "TotalSum", "OrderStatusId") VALUES (50, '2023-05-24 00:14:03.767', 47, 1800, 2);
-INSERT INTO public."Orders" ("Id", "CreatedDate", "UserId", "TotalSum", "OrderStatusId") VALUES (52, '2023-05-24 00:14:32.856', 47, 2600, 2);
-
-
---
--- TOC entry 3454 (class 0 OID 74358)
--- Dependencies: 234
--- Data for Name: OrderToPositions; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (42, 2, 49, 1);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (43, 1, 49, 4);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (44, 2, 50, 2);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (45, 1, 50, 4);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (46, 2, 51, 2);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (47, 1, 51, 4);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (48, 2, 52, 2);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (49, 1, 52, 4);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (50, 2, 53, 2);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (51, 1, 53, 4);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (52, 2, 54, 4);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (56, 2, 56, 1);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (57, 1, 56, 1);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (58, 3, 56, 1);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (59, 2, 57, 1);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (60, 4, 57, 1);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (61, 5, 57, 3);
-INSERT INTO public."OrderToPositions" ("Id", "MenuPositionId", "OrderId", "Count") VALUES (62, 1, 57, 1);
-
 
 --
 -- TOC entry 3442 (class 0 OID 16595)
@@ -253,45 +182,6 @@ INSERT INTO public."Tables" ("Id", "TableNum", "GuestNum", "ReserveCost") VALUES
 INSERT INTO public."Tables" ("Id", "TableNum", "GuestNum", "ReserveCost") VALUES (14, 113, 2, 400);
 INSERT INTO public."Tables" ("Id", "TableNum", "GuestNum", "ReserveCost") VALUES (15, 114, 4, 900);
 INSERT INTO public."Tables" ("Id", "TableNum", "GuestNum", "ReserveCost") VALUES (16, 115, 6, 1200);
-
-
---
--- TOC entry 3450 (class 0 OID 66104)
--- Dependencies: 230
--- Data for Name: TableOrders; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (29, 3, '2023-05-23 00:00:00', 8, 49);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (30, 1, '2023-05-24 00:00:00', 4, 50);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (31, 1, '2023-05-24 00:00:00', 2, 51);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (32, 2, '2023-05-24 00:00:00', 2, 51);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (33, 1, '2023-05-25 00:00:00', 8, 52);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (34, 2, '2023-05-25 00:00:00', 8, 52);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (35, 6, '2023-05-24 00:00:00', 2, 53);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (36, 5, '2023-05-24 00:00:00', 2, 53);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (37, 1, '2023-05-25 00:00:00', 2, 54);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (38, 2, '2023-05-25 00:00:00', 2, 54);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (42, 1, '2023-05-27 00:00:00', 7, 56);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (43, 2, '2023-05-27 00:00:00', 7, 56);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (44, 3, '2023-05-27 00:00:00', 7, 56);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (45, 1, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (46, 2, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (47, 3, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (48, 6, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (49, 7, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (50, 8, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (51, 12, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (52, 11, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (53, 10, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (54, 5, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (55, 4, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (56, 9, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (57, 13, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (58, 14, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (59, 15, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (60, 16, '2023-05-28 00:00:00', 8, 57);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (61, 1, '2023-06-02 00:00:00', 5, 58);
-INSERT INTO public."TableOrders" ("Id", "TableId", "ReservedDate", "OrderPeriodId", "OrderId") VALUES (62, 2, '2023-06-02 00:00:00', 5, 58);
 
 
 --
