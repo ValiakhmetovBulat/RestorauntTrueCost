@@ -101,6 +101,9 @@
 </AuthorizeView>
 
 @code {
+    string userEmail { get; set; }
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; }
     protected int selectedRoleId = 0;
     protected List<Role> Roles = new();
     protected List<User> UserList = new();
@@ -112,6 +115,10 @@
         ViewNavBar.Hide();
         await GetUsers();
         await GetRoles();
+        var authState = await authenticationState;
+        var authUser = authState.User;
+        var claim = authUser.FindFirst(c => c.Type == ClaimTypes.Email);
+        userEmail = claim?.Value.ToString();
     }
 
     protected async Task GetRoles()
@@ -128,16 +135,26 @@
 
     private async Task DeleteUser(User user)
     {
-        bool confirmed = await jsRuntime.InvokeAsync<bool>(
-            "confirm", 
-            $"Вы действительно хотите удалить пользователя: |{user.Id}| {user.Surname} {user.Name}?");
-
-        if (confirmed)
+        if (userEmail != null)
         {
-            var result = await Http.DeleteFromJsonAsync<User>($"api/user/delete/{user.Id}");
-            await GetUsers();
-            SortUsers();
-        }
+            if (userEmail != user.Email)
+            {
+                bool confirmed = await jsRuntime.InvokeAsync<bool>(
+             "confirm",
+             $"Вы действительно хотите удалить пользователя: |{user.Id}| {user.Surname} {user.Name}?");
+
+                if (confirmed)
+                {
+                    var result = await Http.DeleteFromJsonAsync<User>($"api/user/delete/{user.Id}");
+                    await GetUsers();
+                    SortUsers();
+                }
+            }
+            else
+            {
+                await jsRuntime.InvokeVoidAsync("alert", "Удаление данного пользователя невозможно");
+            }
+        }        
     }
 
     private void OnRoleChanged(int role)
