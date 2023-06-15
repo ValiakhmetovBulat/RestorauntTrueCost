@@ -1,74 +1,72 @@
-&lt;h1&gt;Restoraunt True Cost&lt;/h1&gt;
+<h1>Restoraunt True Cost</h1>
 
-&lt;p&gt;Этот проект является дипломной работой, посвященной реализации алгоритма "True Cost" для автоматизации работы сети ресторанов.&lt;/p&gt;
+<p>Этот проект является дипломной работой, посвященной реализации алгоритма "True Cost" для автоматизации работы сети ресторанов.</p>
 
-&lt;h2&gt;Предварительные требования&lt;/h2&gt;
+<h2>Предварительные требования</h2>
 
-&lt;p&gt;Перед запуском проекта убедитесь, что у вас установлены следующие программные средства:&lt;/p&gt;
+<p>Перед запуском проекта убедитесь, что у вас установлены следующие программные средства:</p>
 
-&lt;ul&gt;
-  &lt;li&gt;PostgreSQL 15 и выше&lt;/li&gt;
-  &lt;li&gt;pgAdmin 4&lt;/li&gt;
-  &lt;li&gt;Visual Studio 2019 и выше (необходимо установить пакеты для работы с ASP.NET Core в Visual Studio Installer)&lt;/li&gt;
-  &lt;li&gt;.NET 7.0 runtime&lt;/li&gt;
-&lt;/ul&gt;
+<ul>
+<li>PostgreSQL 15 и выше</li>
+<li>pgAdmin 4</li>
+<li>Visual Studio 2019 и выше (необходимо установить пакеты для работы с ASP.NET Core в Visual Studio Installer)</li>
+<li>.NET 7.0 runtime</li>
+</ul>
 
-&lt;h2&gt;Начало работы&lt;/h2&gt;
+<h2>Начало работы</h2>
 
-&lt;p&gt;Для запуска проекта выполните следующие шаги:&lt;/p&gt;
+<p>Для запуска проекта выполните следующие шаги:</p>
 
-&lt;ol&gt;
-  &lt;li&gt;Клонируйте этот репозиторий на ваше локальное устройство.&lt;/li&gt;
-  &lt;li&gt;Установите строку подключения к вашему серверу PostgreSQL в файле &lt;code&gt;appsettings.json&lt;/code&gt;, который находится в проекте Server:
-  &lt;code&gt;
-    "ConnectionStrings": {
-    "RestorauntDb": "Server=localhost;Database=yourdatabase;Port=5432;User Id=postgres;Password=yourpassword"
-  }
-  &lt;/code&gt;
-  &lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;Server&lt;/code&gt; - название сервера в PostgreSQL&lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;Databse&lt;/code&gt; - название создаваемой базы данных (можно выбрать любое)&lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;Port&lt;/code&gt; - порт сервера PostgreSQL&lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;User Id&lt;/code&gt; - логин пользователя сервера PostgreSQL&lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;Password&lt;/code&gt; - пароль пользователя сервера PostgreSQL&lt;/li&gt;
-  &lt;li&gt;Соберите и запустите проект. Это создаст необходимую структуру базы данных.&lt;/li&gt;
-  &lt;li&gt;В папке &lt;code&gt;Samples&lt;/code&gt; проекта Server вы найдете скрипт. Скопируйте содержимое скрипта и примените его к созданной базе данных. Это можно сделать с помощью Query Tools в pg Admin (нажмите на созданную базу данных, в выпадающем списке выберите Query Tools, вставьте скрипт и запустите его
+<ol>
+<li>Клонируйте этот репозиторий на ваше локальное устройство.</li>
+<li>Установите строку подключения к вашему серверу PostgreSQL в файле <code>appsettings.json</code>, который находится в проекте Server:
+<code>
+"ConnectionStrings": {
+"RestorauntDb": "Server=localhost;Database=yourdatabase;Port=5432;User Id=postgres;Password=yourpassword"
+}
+</code>
+</li>
+<li><code>Server</code> - название сервера в PostgreSQL</li>
+<li><code>Databse</code> - название создаваемой базы данных (можно выбрать любое)</li>
+<li><code>Port</code> - порт сервера PostgreSQL</li>
+<li><code>User Id</code> - логин пользователя сервера PostgreSQL</li>
+<li><code>Password</code> - пароль пользователя сервера PostgreSQL</li>
+<li>Соберите и запустите проект. Это создаст необходимую структуру базы данных.</li>
+<li>В папке <code>Samples</code> проекта Server вы найдете скрипт. Скопируйте содержимое скрипта и примените его к созданной базе данных. Это можно сделать с помощью Query Tools в pg Admin (нажмите на созданную базу данных, в выпадающем списке выберите Query Tools, вставьте скрипт и запустите его).</li>
+</ol>
 
-).&lt;/li&gt;
-&lt;/ol&gt;
+<h2>Вклад</h2>
 
-&lt;h2&gt;Вклад&lt;/h2&gt;
+<p>Вклад в проект приветствуется! Если вы обнаружили какие-либо проблемы или у вас есть предложения по улучшению, пожалуйста, не стесняйтесь открывать issue или отправлять pull request.</p>
 
-&lt;p&gt;Вклад в проект приветствуется! Если вы обнаружили какие-либо проблемы или у вас есть предложения по улучшению, пожалуйста, не стесняйтесь открывать issue или отправлять pull request.&lt;/p&gt;
+<h2>Лицензия</h2>
 
-&lt;h2&gt;Лицензия&lt;/h2&gt;
+<p>Этот проект лицензируется в соответствии с <a href="LICENSE">MIT License</a>.</p>
 
-&lt;p&gt;Этот проект лицензируется в соответствии с &lt;a href="LICENSE"&gt;MIT License&lt;/a&gt;.&lt;/p&gt;
+<h1>Тестовые данные</h1>
 
-&lt;h1&gt;Тестовые данные&lt;/h1&gt;
+<p>Аккаунты, содержащиеся в скрипте в папке Samples:</p>
 
-&lt;p&gt;Аккаунты, содержащиеся в скрипте в папке Samples:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;strong&gt;Администратор:&lt;/strong&gt;
-    &lt;ul&gt;
-      &lt;li&gt;Логин: admin@example.com&lt;/li&gt;
-      &lt;li&gt;Пароль: Admin123&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;strong&gt;Менеджер:&lt;/strong&gt;
-    &lt;ul&gt;
-      &lt;li&gt;Логин: manager@example.com&lt;/li&gt;
-      &lt;li&gt;Пароль: Manager123&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;strong&gt;Пользователь:&lt;/strong&gt;
-    &lt;ul&gt;
-      &lt;li&gt;Логин: user@example.com&lt;/li&gt;
-      &lt;li&gt;Пароль: User123&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
+<ol>
+<li>
+<strong>Администратор:</strong>
+<ul>
+<li>Логин: admin@example.com</li>
+<li>Пароль: Admin123</li>
+</ul>
+</li>
+<li>
+<strong>Менеджер:</strong>
+<ul>
+<li>Логин: manager@example.com</li>
+<li>Пароль: Manager123</li>
+</ul>
+</li>
+<li>
+<strong>Пользователь:</strong>
+<ul>
+<li>Логин: user@example.com</li>
+<li>Пароль: User123</li>
+</ul>
+</li>
+</ol>
