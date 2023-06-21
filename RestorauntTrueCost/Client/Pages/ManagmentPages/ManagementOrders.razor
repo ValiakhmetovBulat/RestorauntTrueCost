@@ -116,8 +116,14 @@
     protected Order Order = new();
     protected List<OrderStatus> OrderStatuses = new();
     protected string SearchString { get; set; } = string.Empty;
+
+    private static System.Timers.Timer _timer;
+    private int _counter = 30;
+
     protected override async Task OnInitializedAsync()
     {
+        StartTimer();
+
         ViewNavBar.Hide();
         await GetOrder();
         await GetStatuses();
@@ -126,6 +132,29 @@
         var claim = authUser.FindFirst(c => c.Type == ClaimTypes.Role);
         userRole = claim?.Value.ToString();
     }
+
+    public void StartTimer()
+    {
+        _timer = new System.Timers.Timer(1000);
+        _timer.Elapsed += CountDownTimer;
+        _timer.Enabled = true;
+    }
+
+    public async void CountDownTimer(Object source, System.Timers.ElapsedEventArgs e)
+    {
+        if (_counter > 0)
+        {
+            _counter -= 1;
+        }
+        else
+        {            
+            _counter = 30;
+            await GetOrder();
+            StateHasChanged();
+        }      
+        
+    }
+
 
     protected void SortOrders()
     {

@@ -18,12 +18,12 @@ builder.Services.AddAuthentication(options =>
 }).AddCookie(options =>
 {
     options.LoginPath = "/profile/update";
-})
-.AddGoogle(googleOptions =>
-{
-    googleOptions.ClientId = builder.Configuration.GetValue<string>("Authentication:Google:ClientId")!;
-    googleOptions.ClientSecret = builder.Configuration.GetValue<string>("Authentication:Google:ClientSecret")!;
 });
+//.AddGoogle(googleOptions =>
+//{
+//    googleOptions.ClientId = builder.Configuration.GetValue<string>("Authentication:Google:ClientId")!;
+//    googleOptions.ClientSecret = builder.Configuration.GetValue<string>("Authentication:Google:ClientSecret")!;
+//});
 
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
