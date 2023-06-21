@@ -11,7 +11,7 @@ namespace RestorauntTrueCost.Client.ViewModels
         public DateTime DateOfVisit { get; set; } = DateTime.Now;
         [Range(1, 50, ErrorMessage = "Количество гостей может быть в диапазоне от 1 до 50")]
         public int? NumberOfGuests { get; set; }
-        [Range(1, 50, ErrorMessage = "Номер стола может быть в диапазоне от 1 до 50")]
+        [Range(1, 200, ErrorMessage = "Номер стола может быть в диапазоне от 1 до 200")]
         public int? TableNumber { get; set; }
         [Required(ErrorMessage = "Поле не может быть пустым")]
         public string Message { get; set; }
